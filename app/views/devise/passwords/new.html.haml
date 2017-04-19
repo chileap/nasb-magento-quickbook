@@ -1,0 +1,15 @@
+= title('Forget Password Page')
+.row.spacing-top
+  .col.s12.m8.offset-m2
+    .card
+      .card-title.card-header
+        %h3 Forgot your password?
+      = simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+        .card-content
+          = f.error_notification
+          .form-inputs
+            = f.input :email, required: true, autofocus: true, wrapper_html: { class: 'input-field' }
+        .card-action
+          = f.button :submit, "Send me reset password instructions"
+          .input-field
+            = link_to 'Login', new_user_session_path

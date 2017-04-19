@@ -1,0 +1,7 @@
+- if user_signed_in?
+  %ul#user-menu.dropdown-content
+    %li
+      = link_to 'Logout', destroy_user_session_path, method: :delete
+  %ul#user-menu-desktop.dropdown-content
+    %li
+      = link_to 'Logout', destroy_user_session_path, method: :delete

@@ -1,4 +1,4 @@
 require 'rails_helper'
 
-describe RunLog do
+describe User do
 end
