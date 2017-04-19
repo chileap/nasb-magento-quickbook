@@ -43,4 +43,12 @@ class MagentoRestApi
       file << JSON.pretty_generate(key_json)
     end
   end
+
+  def get_specific_magento_order(authentication_data, increment_id)
+    auth_token(authentication_data)
+    puts "get failed magento Id #{increment_id}"
+    orders = @access_token.get("/api/rest/orders?filter[0][attribute]=increment_id&filter[0][in]=#{increment_id}")
+    orders_json = JSON.parse(orders.body)
+    orders_json
+  end
 end

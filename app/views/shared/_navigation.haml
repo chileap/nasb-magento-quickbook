@@ -1,0 +1,32 @@
+%nav#main-menu.teal.accent-4
+  .container-fuild
+    .nav-wrapper
+      = link_to 'Home', root_path, class: 'brand-logo'
+
+      %ul.right.hide-on-med-and-down
+        - if user_signed_in?
+          %li
+            = link_to '#', { class: 'dropdown-button', 'data-activates': 'user-menu-desktop'} do
+              = current_user.email
+              %i.material-icons.right
+                arrow_drop_down
+        - else
+          %li
+            = link_to 'Login', new_user_session_path
+
+      %ul#nav-mobile.side-nav
+        - if user_signed_in?
+          %li
+            = link_to '#', { class: 'dropdown-button', 'data-activates': 'user-menu'} do
+              = current_user.email
+              %i.material-icons.right
+                arrow_drop_down
+        - else
+          %li
+            = link_to 'Login', new_user_session_path
+
+      = link_to '#', { class: 'button-collapse', 'data-activates': 'nav-mobile'} do
+        %i.material-icons
+          menu
+
+= render 'shared/user_menu'

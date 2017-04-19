@@ -34,23 +34,52 @@ namespace :magento_quickbooks_integrator do
     soap_api_key: ENV['MAGENTO_STAGING_API_KEY']
   }
 
-  desc "Pushing data to QBO"
-  task :pushing_orders_to_qbo => :environment do
-    development_access_token = RecordToken.where(type_token: 'development').last
+  desc "Delete Sales Receipt"
+  task :delete_sales_reciept_by_month => :environment do
+    development_access_token = RecordToken.where(type_token: 'development').first
     production_access_token = RecordToken.where(type_token: 'production').first
     staging_access_token = RecordToken.where(type_token: 'staging').first
+    date_range = ['2016-08-01 00:00:00', '2016-08-31 23:59:59']
 
-    date_range = ['2016-08-31 00:00:00', '2016-08-31 23:59:59']
-
-    puts "Start running"
-    run_report = Run.create!(run_date: DateTime.now)
+    puts 'get order from magento that need to push today'
     invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(AUTHENTICATION_MAGENTO_PRO_DATA, state: '2', start_date: date_range[0], end_date: date_range[1])
     puts invoice_list.count
 
     magento_orders = MagentoRestApi.new.order_data(AUTHENTICATION_MAGENTO_PRO_DATA, invoice_list)
+
     MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
 
-    sales_receipts = QuickbooksSalesReceipt.new.create_sales_receipts(run_report, magento_orders, AUTHENTICATION_QBO_STAGING_DATA, development_access_token)
+    sales_receipts = QuickbooksSalesReceipt.new.delete_sales_reciept(magento_orders, AUTHENTICATION_QBO_PRO_DATA, production_access_token)
+    puts "End of processing"
+  end
+
+  desc "Pushing data to QBO"
+  task :pushing_orders_to_qbo => :environment do
+    development_access_token = RecordToken.where(type_token: 'development').first
+    production_access_token = RecordToken.where(type_token: 'production').first
+    staging_access_token = RecordToken.where(type_token: 'staging').first
+
+    date_range = ['2016-10-01 00:00:00', '2016-10-31 23:59:59']
+
+    puts "Start running"
+    run_report = Run.create!(run_date: DateTime.now)
+
+    puts 'find error from last pushing'
+    errors_orders = OrderLog.get_error_orders(AUTHENTICATION_MAGENTO_PRO_DATA)
+    puts "end of finding. There are #{errors_orders.count} error from last time"
+
+    puts 'get order from magento that need to push today'
+    invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(AUTHENTICATION_MAGENTO_PRO_DATA, state: '2', start_date: date_range[0], end_date: date_range[1])
+    puts invoice_list.count
+
+    magento_orders = MagentoRestApi.new.order_data(AUTHENTICATION_MAGENTO_PRO_DATA, invoice_list)
+
+    magento_orders.merge!(errors_orders)
+    puts "total order with error #{magento_orders.count}"
+
+    MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
+
+    sales_receipts = QuickbooksSalesReceipt.new.create_sales_receipts(run_report, magento_orders, AUTHENTICATION_QBO_PRO_DATA, production_access_token)
     puts "End of processing"
   end
 

@@ -1,0 +1,6 @@
+.hide
+  - flash.each do |name, msg|
+    %div{:class => "alert alert-#{name} hidden"}
+      - if msg.is_a?(String)
+        %div{:id => "flash_#{name}"}
+          = sanitize(msg)

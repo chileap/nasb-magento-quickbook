@@ -1,0 +1,18 @@
+= title('Error Report')
+
+.row.spacing-top
+	.col.s12
+		%h3 Error Report
+
+		%table.bordered.responsive-table
+			%thead
+				%tr
+					%th Magento Order ID
+					%th Error Details
+					%th Action
+			%tbody
+				- @error_reports.each do |error_report|
+					%tr
+						%td= error_report.magento_id
+						%td= RunLog.find(error_report.last_runlog_id).message
+						%td

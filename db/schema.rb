@@ -10,19 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170406041000) do
+ActiveRecord::Schema.define(version: 20170410095705) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "failed_records", force: :cascade do |t|
-    t.string   "magento_order_id"
-    t.text     "detail_error"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
-    t.integer  "record_id"
-    t.index ["record_id"], name: "index_failed_records_on_record_id", using: :btree
-  end
 
   create_table "order_logs", force: :cascade do |t|
     t.string   "magento_id"
@@ -42,12 +33,6 @@ ActiveRecord::Schema.define(version: 20170406041000) do
     t.datetime "updated_at",       null: false
   end
 
-  create_table "records", force: :cascade do |t|
-    t.datetime "running_date"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-  end
-
   create_table "run_logs", force: :cascade do |t|
     t.string   "magento_id"
     t.string   "qbo_id"
@@ -63,16 +48,6 @@ ActiveRecord::Schema.define(version: 20170406041000) do
     t.datetime "run_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "success_records", force: :cascade do |t|
-    t.string   "magento_order_id"
-    t.string   "quickbooks_id"
-    t.decimal  "amount",           precision: 8, scale: 2
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-    t.integer  "record_id"
-    t.index ["record_id"], name: "index_success_records_on_record_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|

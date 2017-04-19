@@ -1,0 +1,22 @@
+.spacing-top {
+	margin-top: 30px;
+}
+
+.card-header {
+  @extend .truncate;
+  padding-left: 17px;
+}
+
+.collapsible-body {
+  padding: 2em;
+}
+
+.btn-margin {
+	margin: 20px;
+}
+
+@media #{$large-and-up} {
+  nav .brand-logo {
+    left: 30px;
+  }
+}
