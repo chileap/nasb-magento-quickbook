@@ -1,0 +1,44 @@
+= title('Show Page')
+
+.row.spacing-top
+  .col.s12
+    %h3 Run Report
+    %small= "Run Date: #{@run.run_date.strftime("%v %R (%Z)")}"
+    %br
+    %small= "Date Range: #{@run.start_date.strftime("%v %R (%Z)")} <-> #{@run.end_date.strftime("%v %R (%Z)")}"
+
+    .col.s10.offset-s1.spacing-top
+      %ul.collapsible{"data-collapsible" => "accordion"}
+        %li.active
+          .collapsible-header.active
+            Failures
+          .collapsible-body
+            - if @failed_orders.present?
+              %table.bordered.responsive-table
+                %thead
+                  %tr
+                    %th Magento Order Id
+                    %th Error Details
+
+                %tbody
+                  - @failed_orders.each do |run_log|
+                    %tr
+                      %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                      %td= run_log.message
+
+        %li
+          .collapsible-header
+            Successful
+          .collapsible-body
+            - if @success_orders.present?
+              %table.bordered.responsive-table
+                %thead
+                  %tr
+                    %th Magento Order Id
+                    %th QBO Id
+
+                %tbody
+                  - @success_orders.each do |run_log|
+                    %tr
+                      %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                      %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/salesreceipt?txnId=#{run_log.qbo_id}", target: '_blank'

@@ -34,12 +34,30 @@ namespace :magento_quickbooks_integrator do
     soap_api_key: ENV['MAGENTO_STAGING_API_KEY']
   }
 
+  desc "Get Specific order data"
+  task :get_specific_order_id => :environment do
+    puts "Total Run: #{Run.all.size}"
+    Run.all.each do |run|
+      no_order_id_run_logs = run.run_logs.where(order_id: nil)
+      puts "Total Run Logs: #{no_order_id_run_logs.size}"
+      no_order_id_run_logs.each do |run_log|
+        order = MagentoRestApi.new.get_specific_magento_order(AUTHENTICATION_MAGENTO_PRO_DATA, run_log.magento_id)
+        run_log.update_attributes(order_id: order.keys[0])
+        order_logs = OrderLog.joins("INNER JOIN run_logs ON (#{run_log.id} = order_logs.last_runlog_id)").uniq
+        puts "Total Order Logs: #{order_logs.size}"
+        order_logs.each do |order_log|
+          order_log.update_attributes(order_id: order.keys[0])
+        end
+      end
+    end
+  end
+
   desc "Delete Sales Receipt"
   task :delete_sales_reciept_by_month => :environment do
     development_access_token = RecordToken.where(type_token: 'development').first
     production_access_token = RecordToken.where(type_token: 'production').first
     staging_access_token = RecordToken.where(type_token: 'staging').first
-    date_range = ['2016-08-01 00:00:00', '2016-08-31 23:59:59']
+    date_range = ['2016-09-01 00:00:00', '2016-09-30 23:59:59']
 
     puts 'get order from magento that need to push today'
     invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(AUTHENTICATION_MAGENTO_PRO_DATA, state: '2', start_date: date_range[0], end_date: date_range[1])
@@ -59,10 +77,10 @@ namespace :magento_quickbooks_integrator do
     production_access_token = RecordToken.where(type_token: 'production').first
     staging_access_token = RecordToken.where(type_token: 'staging').first
 
-    date_range = ['2016-10-01 00:00:00', '2016-10-31 23:59:59']
+    date_range = ['2016-09-01 00:00:00', '2016-09-30 23:59:59']
 
     puts "Start running"
-    run_report = Run.create!(run_date: DateTime.now)
+    run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
 
     puts 'find error from last pushing'
     errors_orders = OrderLog.get_error_orders(AUTHENTICATION_MAGENTO_PRO_DATA)

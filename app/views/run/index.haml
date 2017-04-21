@@ -1,0 +1,30 @@
+= title('Home Page')
+
+.row.spacing-top
+  .col.s12
+    - if @current_failed.present?
+      .card.red.accent-4
+        .card-content.white-text.center-align
+          There
+          = 'is'.pluralize(@current_failed.size)
+          currently #{@current_failed.size}
+          = 'order'.pluralize(@current_failed.size)
+          with errors that cannot be pushed to QBO.
+          = link_to 'View Error Report', errors_report_path, class: 'light-blue-text'
+
+    %table.bordered.responsive-table
+      %thead
+        %tr
+          %th ID
+          %th Run Date
+          %th Date Range
+          %th Success Count
+          %th Failed Count
+      %tbody
+        - @runs.each do |run|
+          %tr
+            %td= link_to run.id, run_path(run)
+            %td= run.run_date.strftime("%v %R (%Z)")
+            %td= "#{run.start_date.strftime("%v %R (%Z)")} <-> #{run.end_date.strftime("%v %R (%Z)")}"
+            %td= run.run_logs.success_orders.size
+            %td= run.run_logs.failed_orders.size
