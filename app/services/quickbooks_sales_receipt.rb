@@ -112,17 +112,17 @@ class QuickbooksSalesReceipt
               sales_receipt_upload = @sale_receipt_service.create(sales_receipt)
               puts "#{sales_receipt_upload.id}  #{sales_receipt_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
               sales_receipt_id = sales_receipt_upload.id
-              run_log = run_report.run_logs.create!(magento_id: order["increment_id"], qbo_id: sales_receipt_upload.id, status: 'success')
+              run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: sales_receipt_upload.id, status: 'success')
             rescue Exception => e
               puts e.message
               puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
               sales_receipt_id = nil
-              run_log = run_report.run_logs.create!(magento_id: order["increment_id"], status: 'failed', message: e.message)
+              run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], status: 'failed', message: e.message)
             end
           else
             puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
             sales_receipt_id = nil
-            run_log = run_report.run_logs.create!(magento_id: order["increment_id"], status: 'failed', message: "Tax Name: #{order["tax_name"]} is not existed")
+            run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], status: 'failed', message: "Tax Name: #{order["tax_name"]} is not existed")
           end
 
           order_pushed = { increment_id: order["increment_id"], qbo_id: sales_receipt_id }
@@ -133,7 +133,7 @@ class QuickbooksSalesReceipt
           if order_log.present?
             order_log.update_attributes(qbo_id: run_log.qbo_id, last_runlog_id: run_log.id)
           else
-            OrderLog.create!(magento_id: order["increment_id"], qbo_id: run_log.qbo_id, last_runlog_id: run_log.id)
+            OrderLog.create!(magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: run_log.qbo_id, last_runlog_id: run_log.id)
           end
         else
           puts 'sales receipt already created'
