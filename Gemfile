@@ -15,6 +15,7 @@ gem 'devise',                       '~> 4.2.0'
 gem 'haml',                         '~> 4.0.7'
 gem 'haml-rails'
 gem 'materialize-sass',             '~> 0.97.7'
+gem 'kaminari',                     '~> 0.17.0'
 gem 'dotenv-rails',                 '~> 2.1.1'
 
 gem 'simple_form',                 '~> 3.4.0'

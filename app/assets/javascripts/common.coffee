@@ -3,6 +3,7 @@ MagentoQBO.Common =
     @_toast()
     @_collapseButton()
     @_handleCollapseList()
+    @_handleBtnDropDown()
 
   _toast: ->
     dataToast = ''
@@ -15,6 +16,11 @@ MagentoQBO.Common =
   _collapseButton: ->
     $( document ).ready( ->
       $(".button-collapse").sideNav();
+    )
+
+  _handleBtnDropDown: ->
+    $( document ).ready( ->
+      $(".dropdown-button").dropdown();
     )
 
   _handleCollapseList: ->

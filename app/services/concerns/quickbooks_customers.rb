@@ -9,8 +9,12 @@ module Concerns::QuickbooksCustomers
       display_name = display_name.gsub("’"){"'"}
       create_new_customer(order_items, display_name, list_of_customers_name)
       display_name = display_name.gsub("'"){"\\'"}
-      if display_name == "珊珊 李"
-        customer_id = '915'
+      if display_name == 'Sinan Daş'
+        customer_id = '295' if Rails.env == 'staging'
+        customer_id = '2876' if Rails.env == 'production'
+      elsif display_name == 'james Daʀʀօա'
+        customer_id = '3606' if Rails.env == 'staging'
+        customer_id = '2877' if Rails.env == 'production'
       else
         customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
       end
@@ -62,20 +66,25 @@ module Concerns::QuickbooksCustomers
     end
 
     telephones = customer_detail["addresses"][0]["telephone"].split('/')
+    telephones = customer_detail["addresses"][0]["telephone"].split(',')
+    if customer_detail["addresses"][0]["telephone"].split(' ').second.present? and customer_detail["addresses"][0]["telephone"].split(' ').second.match(/^[[:alpha:]]+$/).present?
+      telephones = customer_detail["addresses"][0]["telephone"].split(' ').first
+    end
     phone = Quickbooks::Model::TelephoneNumber.new
     phone.free_form_number = telephones[0].gsub('or', '').squish
     customer_model.primary_phone = phone
-
-    if telephones.length > 1
-      telephones.each_with_index do |telephone, index|
-        if index == 1
-          phone = Quickbooks::Model::TelephoneNumber.new
-          phone.free_form_number = telephone.gsub('or', '').squish
-          customer_model.alternate_phone = phone
-        elsif index == 2
-          phone = Quickbooks::Model::TelephoneNumber.new
-          phone.free_form_number = telephone.gsub('or', '').squish
-          customer_model.mobile_phone = phone
+    if telephones.class != String
+      if telephones.length > 1
+        telephones.each_with_index do |telephone, index|
+          if index == 1
+            phone = Quickbooks::Model::TelephoneNumber.new
+            phone.free_form_number = telephone.gsub('or', '').squish
+            customer_model.alternate_phone = phone
+          elsif index == 2
+            phone = Quickbooks::Model::TelephoneNumber.new
+            phone.free_form_number = telephone.gsub('or', '').squish
+            customer_model.mobile_phone = phone
+          end
         end
       end
     end

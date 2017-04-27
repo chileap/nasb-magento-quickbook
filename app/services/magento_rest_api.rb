@@ -10,7 +10,7 @@ class MagentoRestApi
   def order_data(authentication_data, lists)
     auth_token(authentication_data)
     orders = {}
-    magento_order_ids = lists.map{|list| {increment_id: list[:increment_id], created_at: list[:created_at], grand_total: list[:grand_total] }}
+    magento_order_ids = lists.map{|list| {increment_id: list[:increment_id], created_at: list[:created_at].in_time_zone('UTC').in_time_zone('America/Toronto').strftime("%Y-%m-%d %H:%M:%S %z"), grand_total: list[:grand_total] }}
     magento_order_ids.each do |magento_order_id|
       puts magento_order_id
       order = @access_token.get("/api/rest/orders?filter[1][attribute]=increment_id&filter[1][in]=#{magento_order_id[:increment_id]}")
@@ -48,7 +48,12 @@ class MagentoRestApi
     auth_token(authentication_data)
     puts "get magento Id #{increment_id}"
     orders = @access_token.get("/api/rest/orders?filter[0][attribute]=increment_id&filter[0][in]=#{increment_id}")
+    invoice = MagentoInvoiceSoapApi.new.get_specific_invoice_from_soap_api(authentication_data, increment_id)
     orders_json = JSON.parse(orders.body)
+    orders_json.each do |key, order|
+      order["invoice_date"] = invoice[:created_at]
+      order["invoice_grand_total"] = invoice[:grand_total]
+    end
     orders_json
   end
 end

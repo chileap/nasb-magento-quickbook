@@ -1,0 +1,82 @@
+class MagentoQboMethods
+  AUTHENTICATION_MAGENTO_PRO_DATA = {
+    consumer_key: ENV['MAGENTO_PRO_CONSUMER_KEY'],
+    consumer_secret: ENV['MAGENTO_PRO_CONSUMER_SECRET'],
+    url: ENV['MAGENTO_PRO_URL'],
+    username: ENV['MAGENTO_PRO_ADMIN_USERNAME'],
+    password: ENV['MAGENTO_PRO_ADMIN_PASSWORD'],
+    soap_api_username: ENV['MAGENTO_PRO_API_USERNAME'],
+    soap_api_key: ENV['MAGENTO_PRO_API_KEY']
+  }
+
+  AUTHENTICATION_MAGENTO_STAGING_DATA = {
+    consumer_key: ENV['MAGENTO_STAGING_CONSUMER_KEY'],
+    consumer_secret: ENV['MAGENTO_STAGING_CONSUMER_SECRET'],
+    url: ENV['MAGENTO_STAGING_URL'],
+    username: ENV['MAGENTO_STAGING_ADMIN_USERNAME'],
+    password: ENV['MAGENTO_STAGING_ADMIN_PASSWORD'],
+    soap_api_username: ENV['MAGENTO_STAGING_API_USERNAME'],
+    soap_api_key: ENV['MAGENTO_STAGING_API_KEY']
+  }
+
+  AUTHENTICATION_QBO_PRO_DATA = {
+    consumer_key: ENV['QUICKBOOKS_CONSUMER_KEY'],
+    consumer_secret: ENV['QUICKBOOKS_CONSUMER_SECRET'],
+    quickbooks_username: ENV['QUICKBOOKS_USERNAME'],
+    quickbooks_password: ENV['QUICKBOOKS_PASSWORD']
+  }
+
+  AUTHENTICATION_QBO_STAGING_DATA = {
+    consumer_key: ENV['QUICKBOOKS_STAGING_CONSUMER_KEY'],
+    consumer_secret: ENV['QUICKBOOKS_STAGING_CONSUMER_SECRET'],
+    quickbooks_username: ENV['QUICKBOOKS_STAGING_USERNAME'],
+    quickbooks_password: ENV['QUICKBOOKS_STAGING_PASSWORD']
+  }
+
+  def push_one_receipt_from_error_order(increment_id)
+    access_token = RecordToken.where(type_token: Rails.env).first
+    authentication_data = check_environment_authentication(Rails.env)
+
+    order = MagentoRestApi.new.get_specific_magento_order(authentication_data[:magento_auth], increment_id)
+    run_report = Run.create!(run_date: DateTime.now, start_date: order['invoice_date'].in_time_zone('UTC').in_time_zone('America/Toronto').strftime("%Y-%m-%d %H:%M:%S %z"), end_date: order['invoice_date'].in_time_zone('UTC').in_time_zone('America/Toronto').strftime("%Y-%m-%d %H:%M:%S %z"))
+    sales_receipt = QuickbooksSalesReceipt.new.create_new_sales_receipts(order, run_report)
+  end
+
+  def push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment)
+    access_token = RecordToken.where(type_token: environment).first
+
+    puts "Start running"
+    run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
+
+    sales_receipts = QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
+    puts "End of processing"
+  end
+
+  def get_orders_from_magento(authentication_magento_data, date_range)
+    puts 'find error from last pushing'
+    errors_orders = OrderLog.get_error_orders(authentication_magento_data)
+    puts "end of finding. There are #{errors_orders.count} error from last time"
+
+    puts 'get order from magento that need to push today'
+    invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(authentication_magento_data, state: '2', start_date: date_range[0].in_time_zone('UTC').strftime("%Y-%m-%d %H:%M:%S %Z"), end_date: date_range[1].in_time_zone('UTC').strftime("%Y-%m-%d %H:%M:%S %Z"))
+    puts invoice_list.count
+
+    magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
+
+    magento_orders.merge!(errors_orders)
+    MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
+    puts "total order with error #{magento_orders.count}"
+    magento_orders
+  end
+
+  def check_environment_authentication(environment)
+    if environment == 'development'
+      authentication_data = { magento_auth: AUTHENTICATION_MAGENTO_PRO_DATA, qbo_auth: AUTHENTICATION_QBO_DEVELOPMENT_DATA }
+    elsif environment == 'staging'
+      authentication_data = { magento_auth: AUTHENTICATION_MAGENTO_STAGING_DATA, qbo_auth: AUTHENTICATION_QBO_STAGING_DATA }
+    else
+      authentication_data = { magento_auth: AUTHENTICATION_MAGENTO_PRO_DATA, qbo_auth: AUTHENTICATION_MAGENTO_PRO_DATA }
+    end
+  end
+end
