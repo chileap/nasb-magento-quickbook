@@ -25,6 +25,8 @@
           %tr
             %td= link_to run.id, run_path(run)
             %td= run.run_date.strftime("%v %R (%Z)")
-            %td= "#{run.start_date.strftime("%v %R (%Z)")} <-> #{run.end_date.strftime("%v %R (%Z)")}"
+            %td= "#{run.start_date.in_time_zone('EST').strftime("%v %R (%Z)")} <-> #{run.end_date.in_time_zone('EST').strftime("%v %R (%Z)")}"
             %td= run.run_logs.success_orders.size
             %td= run.run_logs.failed_orders.size
+
+    = paginate @runs

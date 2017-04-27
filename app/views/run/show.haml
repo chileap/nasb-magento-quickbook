@@ -25,6 +25,7 @@
                     %tr
                       %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
                       %td= run_log.message
+              = paginate @failed_orders
 
         %li
           .collapsible-header
@@ -42,3 +43,4 @@
                     %tr
                       %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
                       %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/salesreceipt?txnId=#{run_log.qbo_id}", target: '_blank'
+              = paginate @success_orders

@@ -19,6 +19,11 @@ nav .brand-logo {
 	font-size: 20px;
 }
 
+.pagination {
+  text-align: center;
+  padding: 20px;
+}
+
 @media #{$large-and-up} {
   nav .brand-logo {
     left: 30px;

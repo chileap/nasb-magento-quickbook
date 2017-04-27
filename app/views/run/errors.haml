@@ -16,3 +16,5 @@
             %td= link_to error_report.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{error_report.order_id}/", target: '_blank'
             %td= RunLog.find(error_report.last_runlog_id).message
             %td
+
+    = paginate @error_reports
