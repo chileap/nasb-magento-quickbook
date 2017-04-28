@@ -28,3 +28,5 @@ namespace :deploy do
 
   before :updated, :cleanup_assets
 end
+
+require 'appsignal/capistrano'

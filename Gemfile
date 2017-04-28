@@ -32,6 +32,8 @@ gem 'capybara',                     '~> 2.10.1'
 gem 'poltergeist',                  '~> 1.11.0'
 gem 'launchy',                      '~> 2.4.3'
 
+gem 'appsignal',                    '~> 1.2.5'
+
 group :development, :test do
   gem 'listen'
   gem 'ffaker',             '~> 2.3'
@@ -54,6 +56,11 @@ group :development do
   gem 'capistrano-rvm',       '0.1.2'
   gem 'capistrano-rails-console', '~> 1.0.2'
   gem 'capistrano-sidekiq', '0.3.5'
+end
+
+group :staging, :production do
+  gem 'asset_sync',         '~> 1.2.1'
+  gem 'fog',                '~> 1.38.0'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

@@ -1,0 +1,21 @@
+defaults: &defaults
+  fog_provider:          'AWS'
+  aws_access_key_id:     "<%= ENV['AWS_ACCESS_KEY_ID'] %>"
+  aws_secret_access_key: "<%= ENV['AWS_SECRET_ACCESS_KEY'] %>"
+  fog_directory:         "<%= ENV['FOG_DIRECTORY']%>"
+  fog_region:            "<%= ENV['FOG_REGION'] %>"
+  existing_remote_files: delete
+
+development:
+  <<: *defaults
+  enabled: false
+
+test:
+  <<: *defaults
+  enabled: false
+
+staging:
+  <<: *defaults
+
+production:
+  <<: *defaults
