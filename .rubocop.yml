@@ -1,0 +1,51 @@
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'public/**/*'
+    - 'log/**/*'
+    - 'db/**/*'
+    - 'spec/**/*'
+    - 'Guardfile'
+    - 'magento_soap_api/*'
+    - 'magento_soap_api/**/*'
+    - 'magento_soap_api/**/**/*'
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+
+LineLength:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Style/RegexpLiteral:
+  Enabled: false
+Style/SpaceBeforeFirstArg:
+  Enabled: false
+Style/ExtraSpacing:
+  Enabled: false
+Style/NumericLiterals:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Rails/HasAndBelongsToMany:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Style/GuardClause:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/AccessorMethodName:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
