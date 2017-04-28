@@ -1,5 +1,5 @@
 class OrderLog < ApplicationRecord
-  def current_failed
+  def self.current_failed
     joins("INNER JOIN run_logs ON (run_logs.id = order_logs.last_runlog_id) AND (run_logs.status = 'failed')")
   end
 

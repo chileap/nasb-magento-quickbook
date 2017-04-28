@@ -3,11 +3,11 @@ class RunLog < ApplicationRecord
 
   validates_inclusion_of :status, in: %w[failed success]
 
-  def failed_orders
+  def self.failed_orders
     where(status: 'failed')
   end
 
-  def success_orders
+  def self.success_orders
     where(status: 'success')
   end
 end
