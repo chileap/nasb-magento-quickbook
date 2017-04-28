@@ -1,5 +1,5 @@
 class RunController < ApplicationController
-  before_action :find_run, only: [:show, :edit, :update, :destroy]
+  before_action :find_run, only: %i[show edit update destroy]
 
   def index
     @runs = Run.all.page(params[:page]).per(20)
