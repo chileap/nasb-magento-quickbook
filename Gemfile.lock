@@ -2,6 +2,7 @@ PATH
   remote: magento_soap_api
   specs:
     magento_soap_api (0.1.0)
+      httpclient (~> 2.7.1)
       savon (= 2.11.1)
 
 GEM
@@ -285,6 +286,7 @@ GEM
       ruby_parser (~> 3.5)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
+    httpclient (2.7.2)
     httpi (2.4.2)
       rack
       socksify
@@ -565,7 +567,6 @@ DEPENDENCIES
   rubocop
   rubyntlm (~> 0.3.2)
   sass-rails (~> 5.0)
-  savon (~> 2.11.0)
   shoulda-matchers (~> 3.1.1)
   simple_form (~> 3.4.0)
   spreadsheet (~> 1.1.4)

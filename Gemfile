@@ -24,7 +24,6 @@ gem 'oauth',                       '~> 0.4.7'
 gem 'pry'
 gem 'quickbooks-ruby',             '~> 0.4.8'
 gem 'rubyntlm',                    '~> 0.3.2'
-gem 'savon',                       '~> 2.11.0'
 gem 'simple_form',                 '~> 3.4.0'
 gem 'spreadsheet',                 '~> 1.1.4'
 
