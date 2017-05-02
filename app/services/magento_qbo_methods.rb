@@ -75,7 +75,7 @@ class MagentoQboMethods
     elsif environment == 'staging'
       { magento_auth: AUTHENTICATION_MAGENTO_STAGING_DATA, qbo_auth: AUTHENTICATION_QBO_STAGING_DATA }
     else
-      { magento_auth: AUTHENTICATION_MAGENTO_PRO_DATA, qbo_auth: AUTHENTICATION_MAGENTO_PRO_DATA }
+      { magento_auth: AUTHENTICATION_MAGENTO_PRO_DATA, qbo_auth: AUTHENTICATION_QBO_PRO_DATA }
     end
   end
 end

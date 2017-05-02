@@ -3,7 +3,7 @@ class QuickbooksSalesReceipt
   include Concerns::QuickbooksCustomers
   include Concerns::QuickbooksLineItems
 
-  BASE_URL = 'https://quickbooks.api.intuit.com/v3/company'.freeze
+  BASE_URL = 'https://quickbooks.api.intuit.com/v3/company'
 
   def renew_token(authentication_data, token)
     @token = QuickbooksSalesReceipt.new.get_new_access_tokens(authentication_data, token)
@@ -14,7 +14,7 @@ class QuickbooksSalesReceipt
       renew_token(authentication_data, token)
     end
     @token = token
-    consumer = OAuth::Consumer.new(authentication_data[:consumer_key], authentication_data[:consumer_secret], site: 'https://oauth.intuit.com')
+    consumer = OAuth::Consumer.new(authentication_data[:consumer_key], authentication_data[:consumer_secret], {site: 'https://oauth.intuit.com'})
     @access_token = OAuth::AccessToken.new(consumer, token.access_token, token.access_secret)
   end
 
@@ -66,7 +66,7 @@ class QuickbooksSalesReceipt
 
   def check_if_sales_receipts_existed(customer_id, customer_memo)
     sales_receipts = @sale_receipt_service.query("select * from SalesReceipt where CustomerRef = '#{customer_id}'").entries
-    sales_receipts.find { |sales_receipt| sales_receipt.customer_memo == customer_memo }
+    sales_receipts.find{ |sales_receipt| sales_receipt.customer_memo == customer_memo }
   end
 
   def create_new_sales_receipts(order, run_report)
@@ -78,7 +78,7 @@ class QuickbooksSalesReceipt
       puts "this #{order['entity_id']} #{order['customer_id']} is failed"
       sales_receipt_id = nil
       run_log = run_report.run_logs.create!(magento_id: order['increment_id'], order_id: order['entity_id'], status: 'failed', message: "Tax Name: #{order['tax_name']} is not existed")
-      result_data = { sales_receipt_id: sales_receipt_id, run_log: run_log }
+      result_data = {sales_receipt_id: sales_receipt_id, run_log: run_log}
     end
 
     write_receipts_into_excel(order['increment_id'], result_data)
@@ -87,16 +87,16 @@ class QuickbooksSalesReceipt
 
   def check_if_tax_existed(tax_name, company_id)
     if tax_name.present?
-      query_end_point = "#{BASE_URL}/#{company_id}"
+      query_end_point   = "#{BASE_URL}/#{company_id}"
       if tax_name == 'HST NB'
         tax_name = 'HST NB (13%25)'
       elsif tax_name == 'HST NL'
         tax_name = 'HST NL (13%25)'
       end
       tax_code_response = @access_token.get("#{query_end_point}/query?query=Select * from TaxCode where Name LIKE '#{tax_name}'")
-      Hash.from_xml(tax_code_response.body)['IntuitResponse']['QueryResponse']
+      response_json     = Hash.from_xml(tax_code_response.body)['IntuitResponse']['QueryResponse']
     else
-      'dont have tax'
+      check_tax = 'dont have tax'
     end
   end
 
@@ -126,14 +126,14 @@ class QuickbooksSalesReceipt
     tax_info = { tax_name: order['tax_name'], tax_rate: order['tax_rate'] }
     service_with_token = { service: @item_service, company_id: @token.company_id, access_token: @access_token }
 
-    product_line_item = QuickbooksSalesReceipt.new.line_item_details(service_with_token, order['base_subtotal'], product_name['product_name'], tax_info)
-    total_amount += order['base_subtotal'].to_f
+    product_line_item = QuickbooksSalesReceipt.new.line_item_details(service_with_token, order["base_subtotal"], product_name["product_name"], tax_info)
+    total_amount = total_amount + order['base_subtotal'].to_f
     sales_receipt.line_items << product_line_item
 
     if order['base_shipping_amount'] != '0.0000'
       shipping_price = QuickbooksSalesReceipt.new.line_item_details(service_with_token, order['base_shipping_amount'], product_name['shipping_name'], tax_info)
       sales_receipt.line_items << shipping_price
-      total_amount += order['base_shipping_amount'].to_f
+      total_amount = total_amount + order['base_shipping_amount'].to_f
     end
 
     grand_total = order['base_total_paid'].to_f - order['base_tax_amount'].to_f
@@ -156,7 +156,7 @@ class QuickbooksSalesReceipt
       sales_receipt_id = nil
       run_log = run_report.run_logs.create!(magento_id: order['increment_id'], order_id: order['entity_id'], status: 'failed', message: e.message)
     end
-    { sales_receipt_id: sales_receipt_id, run_log: run_log }
+    result_data = {sales_receipt_id: sales_receipt_id, run_log: run_log}
   end
 
   def handle_with_orderlogs_and_runlogs(order, result_data)
@@ -170,7 +170,7 @@ class QuickbooksSalesReceipt
 
   def write_receipts_into_excel(increment_id, result_data)
     order_pushed = { increment_id: increment_id, qbo_id: result_data[:sales_receipt_id] }
-    @orders_data_pushed[increment_id] = order_pushed
+    @orders_data_pushed.merge!({"#{increment_id}" => order_pushed})
     write_magento_order_to_excel(@orders_data_pushed)
   end
 
@@ -184,8 +184,8 @@ class QuickbooksSalesReceipt
       puts key
       book.worksheet(0).insert_row (index + 1), [magento_order[:increment_id], magento_order[:qbo_id]]
     end
-    book.write 'log/magento_try_run_oct.xls'
-    puts 'wrote to log/magento_try_run_oct.xls'
+    book.write "log/magento_try_run_oct.xls"
+    puts "wrote to log/magento_try_run_oct.xls"
   end
 
   def transaction_tax_detail(tax_detail)
@@ -198,15 +198,16 @@ class QuickbooksSalesReceipt
 
   def tax_code(tax_name, tax_rate)
     # Check existing tax rate
-    query_end_point = "#{BASE_URL}/#{@token.company_id}"
-    tax_code_response = if tax_name == 'HST NB'
-                          @access_token.get("#{query_end_point}/query?query=Select * from TaxRate WHERE Name LIKE 'HST NB (13%25)' AND RateValue = '#{tax_rate}'")
-                        elsif tax_name == 'HST NL'
-                          @access_token.get("#{query_end_point}/query?query=Select * from TaxRate WHERE Name LIKE 'HST NL (13%25)' AND RateValue = '#{tax_rate}'")
-                        else
-                          @access_token.get("#{query_end_point}/query?query=Select * from TaxRate where Name = '#{tax_name}' AND RateValue = '#{tax_rate}'")
-                        end
-    Hash.from_xml(tax_code_response.body)['IntuitResponse']['QueryResponse']
+    query_end_point   = "#{BASE_URL}/#{@token.company_id}"
+    if tax_name == 'HST NB'
+      tax_code_response = @access_token.get("#{query_end_point}/query?query=Select * from TaxRate WHERE Name LIKE 'HST NB (13%25)' AND RateValue = '#{tax_rate}'")
+    elsif tax_name == 'HST NL'
+      tax_code_response = @access_token.get("#{query_end_point}/query?query=Select * from TaxRate WHERE Name LIKE 'HST NL (13%25)' AND RateValue = '#{tax_rate}'")
+    else
+      tax_code_response = @access_token.get("#{query_end_point}/query?query=Select * from TaxRate where Name = '#{tax_name}' AND RateValue = '#{tax_rate}'")
+    end
+    tax_code          = Hash.from_xml(tax_code_response.body)['IntuitResponse']['QueryResponse']
+    tax_code
   end
 
   def identify_product_name(magento_number)
@@ -245,30 +246,32 @@ class QuickbooksSalesReceipt
     customers = {}
     magento_order_data.each do |k, order_items|
       display_name = "#{order_items['addresses'][0]['firstname']} #{order_items['addresses'][0]['lastname']}".squish
-      display_name = display_name.gsub("'") { "\\'" }
-      display_name = display_name.gsub('’') { "\\'" }
-      customer_id = if display_name == '珊珊 李'
-                      '915'
-                    else
-                      @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
-                    end
-      customers[order_items['increment_id']] = { 'customer_id' => customer_id, 'customer_name' => display_name }
+      display_name = display_name.gsub("'"){"\\'"}
+      display_name = display_name.gsub('’'){"\\'"}
+      if display_name == '珊珊 李'
+        customer_id = '915'
+      else
+        customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
+      end
+      customers.merge!({"#{order_items["increment_id"]}" => {"customer_id" => "#{customer_id}", "customer_name" => "#{display_name}"}})
       puts k
     end
     customers.each do |key, customer|
-      sales_receipts = @sale_receipt_service.query("select * from SalesReceipt where CustomerRef = '#{customer['customer_id']}'").entries
-      puts '=========================================================='
+      sales_receipts = @sale_receipt_service.query("select * from SalesReceipt where CustomerRef = '#{customer["customer_id"]}'").entries
+      puts "=========================================================="
       puts "There are #{sales_receipts.count} sales_receipts of #{customer['customer_name']}"
       sales_receipts.each do |sales_receipt|
-        next unless sales_receipt.customer_memo == "M-#{key}"
-        puts "#{sales_receipt.id}  #{sales_receipt.customer_memo}  #{sales_receipt.doc_number}"
-        begin
-          @sale_receipt_service.delete(sales_receipt)
-        rescue
-          puts "this #{sales_receipt.id} is failed"
+        if sales_receipt.customer_memo == "M-#{key}"
+          puts "#{sales_receipt.id}  #{sales_receipt.customer_memo}  #{sales_receipt.doc_number}"
+          begin
+            @sale_receipt_service.delete(sales_receipt)
+          rescue
+            binding.pry
+            puts "this #{sales_receipt.id} is failed"
+          end
         end
       end
-      puts '=========================================================='
+      puts "=========================================================="
     end
   end
 end
