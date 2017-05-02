@@ -32,6 +32,7 @@ gem 'launchy',                      '~> 2.4.3'
 gem 'poltergeist',                  '~> 1.11.0'
 
 gem 'appsignal',                    '~> 1.2.5'
+gem 'paper_trail',                  '~> 6.0.2'
 
 group :development, :test do
   gem 'database_cleaner',   '~> 1.5.3'
