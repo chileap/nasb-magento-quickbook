@@ -42,8 +42,8 @@ namespace :magento_quickbooks_integrator do
 
   desc 'Pushing data to QBO'
   task pushing_orders_to_qbo: :environment do
-    date_range = ['2016-11-01 00:00:00 EST', '2016-11-30 23:59:59 EST']
-    environment = 'production'
+    date_range = ['2016-11-01 00:00:00 EST', '2016-11-01 10:59:59 EST']
+    environment = 'development'
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
     MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment)
   end
