@@ -1,2 +1,2 @@
 set :stage, :staging
-server 'magentoqbo.rotati.com', user: 'deployer', roles: %w{app web db}
+server 'magentoqbo-staging.rotati.com', user: 'deployer', roles: %w{app web db}
