@@ -24,6 +24,14 @@ nav .brand-logo {
   padding: 20px;
 }
 
+.warning-message {
+  background-color: orange;
+  margin: 0;
+  padding: 15px 0;
+  text-align: center;
+  color: white;
+}
+
 @media #{$large-and-up} {
   nav .brand-logo {
     left: 30px;

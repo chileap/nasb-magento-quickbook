@@ -1,2 +1,2 @@
 set :stage, :production
-server '54.149.183.55', user: 'deployer', roles: %w{app web db}
+server 'magentoqbo.rotati.com', user: 'deployer', roles: %w{app web db}
