@@ -9,6 +9,8 @@
     = csrf_meta_tags
 
   %body{:id => "#{controller_name}-#{params[:action]}"}
+    - unless Rails.env.production?
+      = render 'layouts/warning_message'
     = render 'shared/navigation'
     .container
       = render :partial => 'layouts/message_flash'
