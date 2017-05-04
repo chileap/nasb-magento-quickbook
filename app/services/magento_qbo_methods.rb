@@ -71,7 +71,7 @@ class MagentoQboMethods
 
   def check_environment_authentication(environment)
     if environment == 'development'
-      { magento_auth: AUTHENTICATION_MAGENTO_STAGING_DATA, qbo_auth: AUTHENTICATION_QBO_DEVELOPMENT_DATA }
+      { magento_auth: AUTHENTICATION_MAGENTO_PRO_DATA, qbo_auth: AUTHENTICATION_QBO_DEVELOPMENT_DATA }
     elsif environment == 'staging'
       { magento_auth: AUTHENTICATION_MAGENTO_STAGING_DATA, qbo_auth: AUTHENTICATION_QBO_STAGING_DATA }
     else
