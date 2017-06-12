@@ -34,4 +34,21 @@ Rails.application.configure do
   end
 
   config.active_record.dump_schema_after_migration = false
+  config.action_mailer.default_url_options = { host: 'magentoqbo.com' }
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.asset_host = "http://magentoqbo.com"
+
+  config.action_mailer.smtp_settings = {
+    address:               'email-smtp.us-west-2.amazonaws.com',
+    authentication:        :login,
+    user_name:             ENV['AWS_SES_USER_NAME'],
+    password:              ENV['AWS_SES_PASSWORD'],
+    enable_starttls_auto:  true,
+    port:                  465,
+    openssl_verify_mode:   OpenSSL::SSL::VERIFY_NONE,
+    ssl:                   true,
+    tls:                   true
+  }
 end
