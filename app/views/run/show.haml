@@ -1,46 +1,117 @@
 = title('Show Page')
 
 .row.spacing-top
-  .col.s12
+  .col.s10.offset-s1
     %h3 Run Report
     %small= "Run Date: #{@run.run_date.strftime("%v %R (%Z)")}"
     %br
     %small= "Date Range: #{@run.start_date.in_time_zone('EST').strftime("%v %R (%Z)")} <-> #{@run.end_date.in_time_zone('EST').strftime("%v %R (%Z)")}"
-
-    .col.s10.offset-s1.spacing-top
-      %ul.collapsible{"data-collapsible" => "accordion"}
-        %li.active
-          .collapsible-header.active
-            Failures
-          .collapsible-body
-            - if @failed_orders.present?
-              %table.bordered.responsive-table
-                %thead
-                  %tr
-                    %th Magento Order Id
-                    %th Error Details
-
-                %tbody
-                  - @failed_orders.each do |run_log|
+    .row.spacing-top
+      .col.m6.col.s12
+        .row{:style => "margin-bottom: 0;"}
+          .col.s8
+            %h5= "Sale Receipts (#{@run.run_logs.sale_receipt.size})"
+          .col.s4{:style => "text-align: right;"}
+            - if @run.run_logs.sale_receipt.size > 0
+              = link_to run_sales_receipt_report_path(@run) do
+                %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
+            - else
+              %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
+        %ul.collapsible{"data-collapsible" => "accordion"}
+          %li.active
+            .collapsible-header.active
+              Failures
+              = @run.run_logs.sale_receipt.failed_orders.size
+            .collapsible-body
+              - if @failed_sales_receipt.present?
+                %table.bordered.responsive-table
+                  %thead
                     %tr
-                      %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
-                      %td= run_log.message
-              = paginate @failed_orders
+                      %th Magento Order Id
+                      %th Error Details
 
-        %li
-          .collapsible-header
-            Successful
-          .collapsible-body
-            - if @success_orders.present?
-              %table.bordered.responsive-table
-                %thead
-                  %tr
-                    %th Magento Order Id
-                    %th QBO Id
+                  %tbody
+                    - @failed_sales_receipt.each do |run_log|
+                      %tr
+                        - if Rails.env.production?
+                          %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        - else
+                          %td= link_to run_log.magento_id, "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        %td= run_log.message
+                = paginate @failed_sales_receipt
 
-                %tbody
-                  - @success_orders.each do |run_log|
+          %li
+            .collapsible-header
+              Successful
+              = @run.run_logs.sale_receipt.success_orders.size
+            .collapsible-body
+              - if @success_sales_receipt.present?
+                %table.bordered.responsive-table
+                  %thead
                     %tr
-                      %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
-                      %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/salesreceipt?txnId=#{run_log.qbo_id}", target: '_blank'
-              = paginate @success_orders
+                      %th Magento Order Id
+                      %th QBO Sale Receipt Id
+
+                  %tbody
+                    - @success_sales_receipt.each do |run_log|
+                      %tr
+                        - if Rails.env.production?
+                          %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        - else
+                          %td= link_to run_log.magento_id, "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/salesreceipt?txnId=#{run_log.qbo_id}", target: '_blank'
+                = paginate @success_sales_receipt
+      .col.m6.col.s12
+        .row{:style => "margin-bottom: 0;"}
+          .col.s8
+            %h5= "Credits Memo (#{@run.run_logs.credit_memo.size})"
+          .col.s4{:style => "text-align: right;"}
+            - if @run.run_logs.credit_memo.size > 0
+              = link_to run_credits_memo_report_path(@run) do
+                %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
+            - else
+              %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
+        %ul.collapsible{"data-collapsible" => "accordion"}
+          %li.active
+            .collapsible-header.active
+              Failures
+              = @run.run_logs.credit_memo.failed_orders.size
+            .collapsible-body
+              - if @failed_credits_memo.present?
+                %table.bordered.responsive-table
+                  %thead
+                    %tr
+                      %th Magento Order Id
+                      %th Error Details
+
+                  %tbody
+                    - @failed_credits_memo.each do |run_log|
+                      %tr
+                        - if Rails.env.production?
+                          %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        - else
+                          %td= link_to run_log.magento_id, "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        %td= run_log.message
+                = paginate @failed_credits_memo
+
+          %li
+            .collapsible-header
+              Successful
+              = @run.run_logs.credit_memo.success_orders.size
+            .collapsible-body
+              - if @success_credits_memo.present?
+                %table.bordered.responsive-table
+                  %thead
+                    %tr
+                      %th Magento Order Id
+                      %th QBO Credit Memo Id
+
+                  %tbody
+                    - @success_credits_memo.each do |run_log|
+                      %tr
+                        - if Rails.env.production?
+                          %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        - else
+                          %td= link_to run_log.magento_id, "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
+                        %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/creditmemo?txnId=#{run_log.qbo_id}", target: '_blank'
+                = paginate @success_credits_memo

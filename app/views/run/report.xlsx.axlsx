@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Reports") do |sheet|
+    sheet.add_row ["Magento ID", "QBO ID", "Error Message"]
+    @runlogs.each do |log|
+        sheet.add_row [log.magento_id, log.qbo_id, log.message]
+    end
+end

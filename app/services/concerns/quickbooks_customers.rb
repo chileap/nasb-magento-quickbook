@@ -5,21 +5,40 @@ module Concerns::QuickbooksCustomers
     customers = []
     magento_order_data.each do |k, order_items|
       display_name = "#{order_items['addresses'][0]['firstname']} #{order_items['addresses'][0]['lastname']}".squish
-      display_name = display_name.gsub('’') { "'" }
+      display_name = display_name.gsub('~@~Y') { "'" }
+      gcName = display_name.gsub("'") { "\\'" }
+
+      if gcName.downcase == 'mark brown'
+        display_name = 'Mark Brown Co.'
+      elsif gcName.downcase == 'rob stevenson'
+        display_name = 'Rob Stevenson Co.'
+      end
+
+      puts "===========**==========="
+      puts "GcName => #{gcName}"
+      puts display_name
+
       create_new_customer(order_items, display_name, list_of_customers_name)
       display_name = display_name.gsub("'") { "\\'" }
-      if display_name == 'Sinan Daş'
+
+      if display_name == 'Sinan Da~_'
         customer_id = '295' if Rails.env == 'staging'
         customer_id = '2876' if Rails.env == 'production'
-      elsif display_name == 'james Daʀʀօա'
+      elsif display_name == 'james Da~@~@~Eա'
         customer_id = '3606' if Rails.env == 'staging'
         customer_id = '2877' if Rails.env == 'production'
+      elsif display_name == 'Chris Davidson~@~K'
+        customer_id = '12464'
+      elsif display_name == 'Chris Davidson'
+        customer_id = '12464'
       else
+        puts "finding customer id"
         customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
       end
       order_items['customer_id'] = customer_id
       customers.push(order_items)
       puts "#{display_name} #{k} #{order_items['customer_id']}"
+      puts "=========end==========="
     end
     customers
   end
@@ -57,6 +76,7 @@ module Concerns::QuickbooksCustomers
   def customer_detail(customer_detail, display_name)
     customer_model = Quickbooks::Model::Customer.new
     customer_model.display_name = display_name
+
     if customer_detail['addresses'][0]['email'].present?
       customer_model.primary_email_address = Quickbooks::Model::EmailAddress.new(customer_detail['addresses'][0]['email'])
     end

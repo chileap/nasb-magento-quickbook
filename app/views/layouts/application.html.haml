@@ -12,6 +12,6 @@
     - unless Rails.env.production?
       = render 'layouts/warning_message'
     = render 'shared/navigation'
-    .container
+    .container-fluid
       = render :partial => 'layouts/message_flash'
       = yield

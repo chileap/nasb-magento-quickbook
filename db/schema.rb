@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502081300) do
+ActiveRecord::Schema.define(version: 20170614033808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,9 +19,11 @@ ActiveRecord::Schema.define(version: 20170502081300) do
     t.string   "magento_id"
     t.string   "qbo_id"
     t.integer  "last_runlog_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.string   "order_id"
+    t.string   "invoice_id"
+    t.string   "run_type",       default: "sale_receipt"
   end
 
   create_table "record_tokens", force: :cascade do |t|
@@ -40,9 +42,11 @@ ActiveRecord::Schema.define(version: 20170502081300) do
     t.string   "status"
     t.string   "message"
     t.integer  "run_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.string   "order_id"
+    t.string   "invoice_id"
+    t.string   "run_type",   default: "sale_receipt"
     t.index ["run_id"], name: "index_run_logs_on_run_id", using: :btree
   end
 

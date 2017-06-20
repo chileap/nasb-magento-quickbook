@@ -3,6 +3,14 @@ class RunLog < ApplicationRecord
 
   validates_inclusion_of :status, in: %w[failed success]
 
+  def self.credit_memo
+    where(run_type: 'credit_memo')
+  end
+
+  def self.sale_receipt
+    where(run_type: 'sale_receipt')
+  end
+
   def self.failed_orders
     where(status: 'failed')
   end

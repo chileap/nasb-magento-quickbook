@@ -41,15 +41,43 @@ class MagentoQboMethods
     QuickbooksSalesReceipt.new.create_new_sales_receipts(order, run_report)
   end
 
-  def push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment)
+  def push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
     access_token = RecordToken.where(type_token: environment).first
 
-    puts 'Start running'
-    run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    puts 'Start running pusing sale receipt'
+    # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
     magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
 
     QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
-    puts 'End of processing'
+    puts 'End of sale receipt processing'
+  end
+
+  def push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
+    access_token = RecordToken.where(type_token: environment).first
+
+    puts 'Start running pushing credit memo'
+    # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    magento_orders = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
+
+    QuickbooksCreditsMemo.new.pushing_credit_memo_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
+    puts 'End of credit memo processing'
+  end
+
+  def get_credit_memos_from_magento(authentication_magento_data, date_range)
+    puts 'find error from last pushing'
+    errors_orders = OrderLog.where(run_type: 'credit_memo').get_error_orders(authentication_magento_data)
+    puts "end of finding. There are #{errors_orders.count} error from last time"
+
+    puts 'get order from magento that need to push today'
+    invoice_list = MagentoInvoiceSoapApi.new.get_creditmemo_from_soap_api(authentication_magento_data, start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
+    puts invoice_list.count
+
+    magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
+
+    magento_orders.merge!(errors_orders)
+    MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
+    puts "total credits memo with error #{magento_orders.count}"
+    magento_orders
   end
 
   def get_orders_from_magento(authentication_magento_data, date_range)
