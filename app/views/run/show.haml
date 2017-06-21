@@ -10,7 +10,7 @@
       .col.m6.col.s12
         .row{:style => "margin-bottom: 0;"}
           .col.s8
-            %h5= "Sale Receipts (#{@run.run_logs.sale_receipt.size})"
+            %h5= "Sales Receipts (#{@run.run_logs.sale_receipt.size})"
           .col.s4{:style => "text-align: right;"}
             - if @run.run_logs.sale_receipt.size > 0
               = link_to run_sales_receipt_report_path(@run) do
@@ -64,7 +64,7 @@
       .col.m6.col.s12
         .row{:style => "margin-bottom: 0;"}
           .col.s8
-            %h5= "Credits Memo (#{@run.run_logs.credit_memo.size})"
+            %h5= "Credit Memos (#{@run.run_logs.credit_memo.size})"
           .col.s4{:style => "text-align: right;"}
             - if @run.run_logs.credit_memo.size > 0
               = link_to run_credits_memo_report_path(@run) do

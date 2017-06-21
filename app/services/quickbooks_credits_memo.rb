@@ -107,8 +107,9 @@ class QuickbooksCreditsMemo
     credit_memo.private_note = "C-#{order["increment_id"]}"
     credit_memo.customer_memo = "C-#{order["increment_id"]}"
     credit_memo.currency_id = order["base_currency_code"]
-
     total_amount = 0
+    total_refunded = 0
+
     if order["tax_name"].present? && order["tax_rate"].present?
       tax_detail = { tax_name: order["tax_name"], tax_rate: order["tax_rate"], total_tax_amount: order["base_tax_amount"] }
       credit_memo.txn_tax_detail = transaction_tax_detail(tax_detail)
@@ -126,13 +127,23 @@ class QuickbooksCreditsMemo
     tax_info = { tax_name: order["tax_name"], tax_rate: order["tax_rate"] }
     service_with_token = { service: @item_service, company_id: @token.company_id, access_token: @access_token }
 
-    product_line_item = QuickbooksCreditsMemo.new.line_item_details(service_with_token, order["base_subtotal"], product_name["product_name"], tax_info)
+    order["order_items"].map do |item|
+      if item["base_row_total_incl_tax"] != "0.0000"
+        if item["qty_refunded"] != "0.0000"
+          refunded_amount = item["base_original_price"].to_f * item["qty_refunded"].to_i
+          total_refunded = total_refunded + refunded_amount
+          if item["base_discount_amount"] != "0.0000"
+            total_refunded = total_refunded - item["base_discount_amount"].to_f
+          end
+        end
+      end
+    end
+
+    product_line_item = QuickbooksCreditsMemo.new.line_item_details(service_with_token, total_refunded, product_name["product_name"], tax_info)
     total_amount = total_amount + order["base_subtotal"].to_f
     credit_memo.line_items << product_line_item
 
     if order["base_shipping_amount"] != "0.0000"
-      shipping_price = QuickbooksCreditsMemo.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
-      credit_memo.line_items << shipping_price
       total_amount = total_amount + order["base_shipping_amount"].to_f
     end
 
