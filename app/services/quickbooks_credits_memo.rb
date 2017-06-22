@@ -130,7 +130,7 @@ class QuickbooksCreditsMemo
     order["order_items"].map do |item|
       if item["base_row_total_incl_tax"] != "0.0000"
         if item["qty_refunded"] != "0.0000"
-          refunded_amount = item["base_original_price"].to_f * item["qty_refunded"].to_i
+          refunded_amount = item["base_price"].to_f * item["qty_refunded"].to_i
           total_refunded = total_refunded + refunded_amount
           if item["base_discount_amount"] != "0.0000"
             total_refunded = total_refunded - item["base_discount_amount"].to_f
@@ -139,7 +139,7 @@ class QuickbooksCreditsMemo
       end
     end
 
-    product_line_item = QuickbooksCreditsMemo.new.line_item_details(service_with_token, total_refunded, product_name["product_name"], tax_info)
+    product_line_item = QuickbooksCreditsMemo.new.line_item_details(service_with_token, total_refunded.round(2), product_name["product_name"], tax_info)
     total_amount = total_amount + order["base_subtotal"].to_f
     credit_memo.line_items << product_line_item
 
