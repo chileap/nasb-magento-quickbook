@@ -147,9 +147,11 @@ class QuickbooksCreditsMemo
     ship_qty = "0.0000"
 
     if order["base_shipping_amount"] != "0.0000"
-      if !order['order_items'].pluck('qty_shipped').any?{|qty| qty != ship_qty}
-        shipping_price = QuickbooksCreditsMemo.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
-        credit_memo.line_items << shipping_price
+      if order["status"] == "closed"
+        if !order['order_items'].pluck('qty_shipped').any?{|qty| qty != ship_qty}
+          shipping_price = QuickbooksCreditsMemo.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
+          credit_memo.line_items << shipping_price
+        end
       end
       total_amount = total_amount + order["base_shipping_amount"].to_f
     end
