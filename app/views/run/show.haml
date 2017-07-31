@@ -104,7 +104,7 @@
                   %thead
                     %tr
                       %th Magento Order Id
-                      %th QBO Credit Memo Id
+                      %th QBO Credit Memo No
 
                   %tbody
                     - @success_credits_memo.each do |run_log|
@@ -113,5 +113,5 @@
                           %td= link_to run_log.magento_id, "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
                         - else
                           %td= link_to run_log.magento_id, "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{run_log.order_id}/", target: '_blank'
-                        %td= link_to run_log.qbo_id, "https://ca.qbo.intuit.com/app/creditmemo?txnId=#{run_log.qbo_id}", target: '_blank'
+                        %td= link_to run_log.doc_number.nil? ? run_log.qbo_id : run_log.doc_number, "https://ca.qbo.intuit.com/app/creditmemo?txnId=#{run_log.qbo_id}", target: '_blank'
                 = paginate @success_credits_memo
