@@ -43,13 +43,13 @@ class RunController < ApplicationController
     else
       title = 'Credit Memo'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "Quickbooks #{title} No.", 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
       magento_link = log.magento_id
       if !qbo_link.nil?
-        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number 
+        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
       end
       if Rails.env.production?
         magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
