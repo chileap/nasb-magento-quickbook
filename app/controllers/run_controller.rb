@@ -24,7 +24,7 @@ class RunController < ApplicationController
 
   def credits_memo_report
     runlogs = @run.run_logs.credit_memo
-    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.end_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
   end
 
   def find_run
