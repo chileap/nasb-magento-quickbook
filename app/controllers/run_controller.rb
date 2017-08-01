@@ -24,7 +24,7 @@ class RunController < ApplicationController
 
   def credits_memo_report
     runlogs = @run.run_logs.credit_memo
-    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.end_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
   end
 
   def find_run
@@ -49,7 +49,7 @@ class RunController < ApplicationController
       qbo_link = log.qbo_id
       magento_link = log.magento_id
       if !qbo_link.nil?
-        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number 
+        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
       end
       if Rails.env.production?
         magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
