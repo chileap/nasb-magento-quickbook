@@ -19,7 +19,7 @@ class RunController < ApplicationController
 
   def sales_receipt_report
     runlogs = @run.run_logs.sale_receipt
-    send_data(xlsx_report(runlogs, 'salesreceipt'), filename: "#{@run.end_date.strftime("%B-%Y")}-SalesRecript-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'salesreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-SalesRecript-RunID-#{@run.id}.xls")
   end
 
   def credits_memo_report
