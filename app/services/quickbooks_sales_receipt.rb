@@ -149,7 +149,7 @@ class QuickbooksSalesReceipt
       sales_receipt_upload = @sale_receipt_service.create(sales_receipt)
       puts "#{sales_receipt_upload.id}  #{sales_receipt_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
       sales_receipt_id = sales_receipt_upload.id
-      run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success')
+      run_log = run_report.run_logs.create!(credit_amount: sales_receipt_upload.total, order_status: order["status"], billing_name: sales_receipt_upload.customer_ref.name , magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success')
     rescue Exception => e
       puts e.message
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
