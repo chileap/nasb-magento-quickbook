@@ -169,7 +169,7 @@ class QuickbooksCreditsMemo
       credit_memo_upload = @credit_memo_service.create(credit_memo)
       puts "#{credit_memo_upload.id}  #{credit_memo_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
       credit_memo_id = credit_memo_upload.id
-      run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: credit_memo_upload.id, status: 'success', run_type: 'credit_memo', doc_number: credit_memo_upload.doc_number)
+      run_log = run_report.run_logs.create!(credit_amount: credit_memo_upload.total,order_status: order["status"],billing_name: credit_memo_upload.customer_ref.name,magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: credit_memo_upload.id, status: 'success', run_type: 'credit_memo', doc_number: credit_memo_upload.doc_number)
     rescue Exception => e
       puts e.message
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
