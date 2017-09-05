@@ -43,7 +43,7 @@ class RunController < ApplicationController
     else
       title = 'Credit Memo'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.",'Credit Amount', 'Order Status','Billing Name ', 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
@@ -57,9 +57,9 @@ class RunController < ApplicationController
         magento_link = Spreadsheet::Link.new "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       end
       if log.status === 'success'
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link,'']
+        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.credit_amount, log.order_status, log.billing_name, '']
       else
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.message]
+        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A','N/A','N/A','N/A', log.message]
       end
     end
 
