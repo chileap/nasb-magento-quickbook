@@ -78,7 +78,7 @@ module Concerns::QuickbooksCustomers
     customer_model.display_name = display_name
 
     if customer_detail['addresses'][0]['email'].present?
-      customer_model.primary_email_address = Quickbooks::Model::EmailAddress.new(customer_detail['addresses'][0]['email'])
+      customer_model.primary_email_address = Quickbooks::Model::EmailAddress.new(customer_detail['addresses'][0]['email'][0,28])
     end
 
     telephones = customer_detail['addresses'][0]['telephone'].split(',') || customer_detail['addresses'][0]['telephone'].split('/')
@@ -86,18 +86,18 @@ module Concerns::QuickbooksCustomers
       telephones = customer_detail['addresses'][0]['telephone'].split(' ').first if customer_detail['addresses'][0]['telephone'].split(' ').second.match(/^[[:alpha:]]+$/).present?
     end
     phone = Quickbooks::Model::TelephoneNumber.new
-    phone.free_form_number = telephones[0].gsub('or', '').squish
+    phone.free_form_number = telephones[0].gsub('or', '').squish[0,28]
     customer_model.primary_phone = phone
     if telephones.class != String
       if telephones.length > 1
         telephones.each_with_index do |telephone, index|
           if index == 1
             phone = Quickbooks::Model::TelephoneNumber.new
-            phone.free_form_number = telephone.gsub('or', '').squish
+            phone.free_form_number = telephone.gsub('or', '').squish[0,28]
             customer_model.alternate_phone = phone
           elsif index == 2
             phone = Quickbooks::Model::TelephoneNumber.new
-            phone.free_form_number = telephone.gsub('or', '').squish
+            phone.free_form_number = telephone.gsub('or', '').squish[0,28]
             customer_model.mobile_phone = phone
           end
         end
@@ -109,8 +109,8 @@ module Concerns::QuickbooksCustomers
     address.city = customer_detail['addresses'][0]['city']
     address.country_sub_division_code = customer_detail['addresses'][0]['country_id']
     address.postal_code = customer_detail['addresses'][0]['postcode']
-    customer_model.billing_address = address
-    customer_model.shipping_address = address
+    customer_model.billing_address = address[0,28]
+    customer_model.shipping_address = address[0,28]
 
     customer_model
   end
