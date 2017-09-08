@@ -3,6 +3,8 @@ class RunLog < ApplicationRecord
 
   validates_inclusion_of :status, in: %w[failed success]
 
+  default_scope { order(status: :desc) }
+
   def self.credit_memo
     where(run_type: 'credit_memo')
   end
