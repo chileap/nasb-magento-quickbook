@@ -54,7 +54,7 @@ class RunController < ApplicationController
       if Rails.env.production?
         magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       else
-        magento_link = Spreadsheet::Link.new "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
+        magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       end
       if log.status === 'success'
         book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.credit_amount, log.order_status, log.billing_name, '']
