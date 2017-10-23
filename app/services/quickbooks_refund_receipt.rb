@@ -65,7 +65,7 @@ class QuickbooksRefundReceipt
   end
 
   def check_if_refund_receipt_existed(customer_id, customer_refund)
-    refunds = @refund_receipt_service.query("select * from RefundReceipt where id = '#{customer_refund.id}'").entries
+    refunds = @refund_receipt_service.query("select * from RefundReceipt where id = '#{customer_id}'").entries
     refunds.find{ |refund_receipt| refund_receipt.customer_refund == customer_refund }
   end
 
