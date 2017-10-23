@@ -63,6 +63,31 @@ class MagentoQboMethods
     puts 'End of credit memo processing'
   end
 
+  def push_qbo_refund_receipt_from_magento_orders(date_range, authentication_data, environment, run_report)
+    access_token = RecordToken.where(type_token: environment).first
+
+    puts 'Start running pushing refund receipt'
+    # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    credit_magento_orders = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
+    sales_receipt_magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
+
+    magento_orders = credit_magento_orders.merge!(sales_receipt_magento_orders)
+
+    magento_order_with_status_close = []
+    magento_orders.map do |order|
+      order_status = order.last['status']
+    
+      if order_status == 'closed'
+        magento_order_with_status_close.push(order)
+
+        if magento_order_with_status_close.count > 0
+          QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_order_with_status_close, authentication_data[:qbo_auth], access_token)
+          puts 'End of credit memo processing'
+        end
+      end
+    end   
+  end
+
   def get_credit_memos_from_magento(authentication_magento_data, date_range)
     puts 'find error from last pushing'
     errors_orders = OrderLog.where(run_type: 'credit_memo').get_error_orders(authentication_magento_data)

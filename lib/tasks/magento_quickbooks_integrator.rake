@@ -66,6 +66,7 @@ namespace :magento_quickbooks_integrator do
     run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
     MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
+    MagentoQboMethods.new.push_qbo_refund_receipt_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
 
   desc 'Get Specific order data'
