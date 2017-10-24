@@ -86,18 +86,18 @@ module Concerns::QuickbooksCustomers
       telephones = customer_detail['addresses'][0]['telephone'].split(' ').first if customer_detail['addresses'][0]['telephone'].split(' ').second.match(/^[[:alpha:]]+$/).present?
     end
     phone = Quickbooks::Model::TelephoneNumber.new
-    phone.free_form_number = telephones[0].gsub('or', '').squish
+    phone.free_form_number = telephones[0].gsub('or', '').squish[0,28]
     customer_model.primary_phone = phone
     if telephones.class != String
       if telephones.length > 1
         telephones.each_with_index do |telephone, index|
           if index == 1
             phone = Quickbooks::Model::TelephoneNumber.new
-            phone.free_form_number = telephone.gsub('or', '').squish
+            phone.free_form_number = telephone.gsub('or', '').squish[0,28]
             customer_model.alternate_phone = phone
           elsif index == 2
             phone = Quickbooks::Model::TelephoneNumber.new
-            phone.free_form_number = telephone.gsub('or', '').squish
+            phone.free_form_number = telephone.gsub('or', '').squish[0,28]
             customer_model.mobile_phone = phone
           end
         end
@@ -105,10 +105,10 @@ module Concerns::QuickbooksCustomers
     end
 
     address = Quickbooks::Model::PhysicalAddress.new
-    address.line1 = customer_detail['addresses'][0]['street']
-    address.city = customer_detail['addresses'][0]['city']
-    address.country_sub_division_code = customer_detail['addresses'][0]['country_id']
-    address.postal_code = customer_detail['addresses'][0]['postcode']
+    address.line1 = customer_detail['addresses'][0]['street'][0,28]
+    address.city = customer_detail['addresses'][0]['city'][0,28]
+    address.country_sub_division_code = customer_detail['addresses'][0]['country_id'][0,28]
+    address.postal_code = customer_detail['addresses'][0]['postcode'][0,28]
     customer_model.billing_address = address
     customer_model.shipping_address = address
 

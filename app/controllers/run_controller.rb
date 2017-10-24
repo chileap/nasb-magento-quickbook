@@ -19,12 +19,12 @@ class RunController < ApplicationController
 
   def sales_receipt_report
     runlogs = @run.run_logs.sale_receipt
-    send_data(xlsx_report(runlogs, 'salesreceipt'), filename: "#{@run.end_date.strftime("%B-%Y")}-SalesRecript-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'salesreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-SalesReceipt-RunID-#{@run.id}.xls")
   end
 
   def credits_memo_report
     runlogs = @run.run_logs.credit_memo
-    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.end_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
   end
 
   def find_run
@@ -43,23 +43,23 @@ class RunController < ApplicationController
     else
       title = 'Credit Memo'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "Quickbooks #{title} ID", 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.",'Credit Amount', 'Order Status','Billing Name ', 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
       magento_link = log.magento_id
       if !qbo_link.nil?
-        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.qbo_id
+        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
       end
       if Rails.env.production?
         magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       else
-        magento_link = Spreadsheet::Link.new "http://magento-89390-250626.cloudwaysapps.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
+        magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       end
       if log.status === 'success'
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link,'']
+        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.credit_amount, log.order_status, log.billing_name, '']
       else
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.message]
+        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A','N/A','N/A','N/A', log.message]
       end
     end
 

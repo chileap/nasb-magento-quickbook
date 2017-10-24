@@ -1,4 +1,4 @@
-class QuickbooksCreditsMemo
+class QuickbooksRefundReceipt
   include Concerns::QuickbooksApiToken
   include Concerns::QuickbooksCustomers
   include Concerns::QuickbooksLineItems
@@ -6,7 +6,7 @@ class QuickbooksCreditsMemo
   BASE_URL = 'https://quickbooks.api.intuit.com/v3/company'
 
   def renew_token(authentication_data, token)
-    @token = QuickbooksCreditsMemo.new.get_new_access_tokens(authentication_data, token)
+    @token = QuickbooksRefundReceipt.new.get_new_access_tokens(authentication_data, token)
   end
 
   def get_access_token(authentication_data, token)
@@ -33,55 +33,55 @@ class QuickbooksCreditsMemo
     service_setting(@customer_service)
   end
 
-  def credit_memo_service
-    @credit_memo_service = Quickbooks::Service::CreditMemo.new
-    service_setting(@credit_memo_service)
+  def refund_receipt_service
+    @refund_receipt_service = Quickbooks::Service::RefundReceipt.new
+    service_setting(@refund_receipt_service)
   end
 
-  def pushing_credit_memo_from_magento(run_report, orders_data, authentication_data, old_access_token)
+  def pushing_refund_receipt_from_magento(run_report, orders_data, authentication_data, old_access_token)
     get_access_token(authentication_data, old_access_token)
-    credit_memo_service
+    refund_receipt_service
     customer_service
     item_service
 
-    list_of_customer_orders = QuickbooksCreditsMemo.new.get_qbo_customers_by(@customer_service, orders_data)
+    list_of_customer_orders = QuickbooksRefundReceipt.new.get_qbo_customers_by(@customer_service, orders_data)
 
     if list_of_customer_orders.present?
-      create_credit_memo(list_of_customer_orders, run_report)
+      create_refund_receipt(list_of_customer_orders, run_report)
     end
   end
 
-  def create_credit_memo(list_of_customer_orders, run_report)
+  def create_refund_receipt(list_of_customer_orders, run_report)
     @orders_data_pushed = {}
     list_of_customer_orders.each do |order|
-      customer_receipt = check_if_credit_memo_existed(order["customer_id"], "C-#{order["increment_id"]}")
+      customer_receipt = check_if_refund_receipt_existed(order["customer_id"], "C-#{order["increment_id"]}")
 
       if customer_receipt.blank?
-        create_new_credit_memos(order, run_report)
+        create_new_refund_receipt(order, run_report)
       else
-        puts 'credit memo already created'
+        puts 'refund receipt already created'
       end
     end
   end
 
-  def check_if_credit_memo_existed(customer_id, customer_memo)
-    credit_memos = @credit_memo_service.query("select * from CreditMemo where CustomerRef = '#{customer_id}'").entries
-    credit_memos.find{ |credit_memo| credit_memo.customer_memo == customer_memo }
+  def check_if_refund_receipt_existed(customer_id, customer_refund)
+    refunds = @refund_receipt_service.query("select * from RefundReceipt where id = '#{customer_id}'").entries
+    refunds.find{ |refund_receipt| refund_receipt.customer_refund == customer_refund }
   end
 
-  def create_new_credit_memos(order, run_report)
+  def create_new_refund_receipt(order, run_report)
     check_tax = check_if_tax_existed(order["tax_name"], @token.company_id)
 
     if check_tax.present?
-      result_data = credit_memos_if_tax_existed(order, run_report)
+      result_data = refund_receipt_if_tax_existed(order, run_report)
     else
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
-      credit_memo_id = nil
+      refund_receipt_id = nil
       run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], status: 'failed', message: "Tax Name: #{order["tax_name"]} not found in QBO", run_type: 'credit_memo')
-      result_data = {credit_memo_id: credit_memo_id, run_log: run_log}
+      result_data = {refund_receipt_id: refund_receipt_id, run_log: run_log}
     end
 
-    write_credit_memos_into_excel(order["increment_id"], result_data)
+    write_refund_receipt_into_excel(order["increment_id"], result_data)
     handle_with_orderlogs_and_runlogs(order, result_data)
   end
 
@@ -100,19 +100,20 @@ class QuickbooksCreditsMemo
     end
   end
 
-  def credit_memos_if_tax_existed(order, run_report)
-    credit_memo = Quickbooks::Model::CreditMemo.new
-    credit_memo.customer_id = order["customer_id"]
-    credit_memo.txn_date = order["invoice_date"]
-    credit_memo.private_note = "C-#{order["increment_id"]}"
-    credit_memo.customer_memo = "C-#{order["increment_id"]}"
-    credit_memo.currency_id = order["base_currency_code"]
+  def refund_receipt_if_tax_existed(order, run_report)
+    refund_receipt = Quickbooks::Model::RefundReceipt.new
+    refund_receipt.customer_id = order["customer_id"]
+    refund_receipt.txn_date = order["invoice_date"]
+    refund_receipt.private_note = "C-#{order["increment_id"]}"
+    refund_receipt.customer_memo = "C-#{order["increment_id"]}"
+    refund_receipt.currency_id = order["base_currency_code"]
+    refund_receipt.deposit_to_account_ref = Quickbooks::Model::BaseReference.new('4', name: 'Undeposited Funds')
     total_amount = 0
     total_refunded = 0
 
     if order["tax_name"].present? && order["tax_rate"].present?
       tax_detail = { tax_name: order["tax_name"], tax_rate: order["tax_rate"], total_tax_amount: order["base_tax_amount"] }
-      credit_memo.txn_tax_detail = transaction_tax_detail(tax_detail)
+      refund_receipt.txn_tax_detail = transaction_tax_detail(tax_detail)
       puts "#{order["tax_name"]} #{order["tax_rate"]}"
     else
       order["tax_name"] = 'Exempt'
@@ -139,9 +140,9 @@ class QuickbooksCreditsMemo
       end
     end
 
-    product_line_item = QuickbooksCreditsMemo.new.line_item_details(service_with_token, total_refunded.round(2), product_name["product_name"], tax_info)
+    product_line_item = QuickbooksRefundReceipt.new.line_item_details(service_with_token, total_refunded.round(2), product_name["product_name"], tax_info)
     total_amount = total_amount + order["base_subtotal"].to_f
-    credit_memo.line_items << product_line_item
+    refund_receipt.line_items << product_line_item
 
     # Check if orders got shipped or not
     ship_qty = "0.0000"
@@ -149,8 +150,8 @@ class QuickbooksCreditsMemo
     if order["base_shipping_amount"] != "0.0000"
       if order["status"] == "closed"
         if !order['order_items'].pluck('qty_shipped').any?{|qty| qty != ship_qty}
-          shipping_price = QuickbooksCreditsMemo.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
-          credit_memo.line_items << shipping_price
+          shipping_price = QuickbooksRefundReceipt.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
+          refund_receipt.line_items << shipping_price
         end
       end
       total_amount = total_amount + order["base_shipping_amount"].to_f
@@ -161,22 +162,22 @@ class QuickbooksCreditsMemo
 
     if (grand_total > total_amount) && (grand_total != total_amount)
       processing_fee = grand_total - total_amount
-      processing_price = QuickbooksCreditsMemo.new.line_item_details(service_with_token, processing_fee, product_name["processing_fee"], tax_info)
-      credit_memo.line_items << processing_price
+      processing_price = QuickbooksRefundReceipt.new.line_item_details(service_with_token, processing_fee, product_name["processing_fee"], tax_info)
+      refund_receipt.line_items << processing_price
     end
 
     begin
-      credit_memo_upload = @credit_memo_service.create(credit_memo)
-      puts "#{credit_memo_upload.id}  #{credit_memo_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
-      credit_memo_id = credit_memo_upload.id
-      run_log = run_report.run_logs.create!(credit_amount: credit_memo_upload.total,order_status: order["status"],billing_name: credit_memo_upload.customer_ref.name,magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: credit_memo_upload.id, status: 'success', run_type: 'credit_memo', doc_number: credit_memo_upload.doc_number)
+      refund_receipt_upload = @refund_receipt_service.create(refund_receipt)
+      puts "#{refund_receipt_upload.id}  #{refund_receipt_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
+      credit_memo_id = refund_receipt_upload.id
+      run_log = run_report.run_logs.create!(credit_amount: refund_receipt_upload.total,order_status: order["status"],billing_name: refund_receipt_upload.customer_ref.name,magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: refund_receipt_upload.id, status: 'success', run_type: 'credit_memo', doc_number: refund_receipt_upload.doc_number)
     rescue Exception => e
       puts e.message
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
-      credit_memo_id = nil
-      run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], status: 'failed', message: e.message, run_type: 'credit_memo')
+      refund_receipt_id = nil
+      run_log = run_report.run_logs.create!(magento_id: order["increment_id"], order_id: order["entity_id"], status: 'failed', message: e.message, run_type: 'refund_receipt')
     end
-    result_data = {credit_memo_id: credit_memo_id, run_log: run_log}
+    result_data = {refund_receipt_id: refund_receipt_id, run_log: run_log}
   end
 
   def handle_with_orderlogs_and_runlogs(order, result_data)
@@ -184,11 +185,11 @@ class QuickbooksCreditsMemo
     if order_log.present?
       order_log.update_attributes(qbo_id: result_data[:run_log].qbo_id, last_runlog_id: result_data[:run_log].id)
     else
-      OrderLog.create!(magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: result_data[:run_log].qbo_id, last_runlog_id: result_data[:run_log].id, run_type: 'credit_memo')
+      OrderLog.create!(magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: result_data[:run_log].qbo_id, last_runlog_id: result_data[:run_log].id, run_type: 'refund_receipt')
     end
   end
 
-  def write_credit_memos_into_excel(increment_id, result_data)
+  def write_refund_receipt_into_excel(increment_id, result_data)
     order_pushed = { increment_id: increment_id, qbo_id: result_data[:credit_memo_id], result_data: result_data[:run_log] }
     @orders_data_pushed.merge!({"#{increment_id}" => order_pushed})
     write_magento_order_to_excel(@orders_data_pushed)
