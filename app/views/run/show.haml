@@ -64,9 +64,9 @@
       .col.m6.col.s12
         .row{:style => "margin-bottom: 0;"}
           .col.s8
-            %h5= "Credit Memos (#{@run.run_logs.credit_memo.size})"
+            %h5= "Refund Receipt (#{@run.run_logs.refund_receipt.size})"
           .col.s4{:style => "text-align: right;"}
-            - if @run.run_logs.credit_memo.size > 0
+            - if @run.run_logs.refund_receipt.size > 0
               = link_to run_credits_memo_report_path(@run) do
                 %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
             - else
@@ -75,7 +75,7 @@
           %li.active
             .collapsible-header.active
               Failures
-              = @run.run_logs.credit_memo.failed_orders.size
+              = @run.run_logs.refund_receipt.failed_orders.size
             .collapsible-body
               - if @failed_credits_memo.present?
                 %table.bordered.responsive-table
@@ -97,14 +97,14 @@
           %li
             .collapsible-header
               Successful
-              = @run.run_logs.credit_memo.success_orders.size
+              = @run.run_logs.refund_receipt.success_orders.size
             .collapsible-body
               - if @success_credits_memo.present?
                 %table.bordered.responsive-table
                   %thead
                     %tr
                       %th Magento Order Id
-                      %th Credit Memo No.
+                      %th Refund Receipt No.
 
                   %tbody
                     - @success_credits_memo.each do |run_log|

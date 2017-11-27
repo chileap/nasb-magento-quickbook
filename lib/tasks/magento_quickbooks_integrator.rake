@@ -58,15 +58,14 @@ namespace :magento_quickbooks_integrator do
     MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
 
-  desc "Pushing sale receipt and credit memo to QBO"
+  desc "Pushing sale receipt and refund receipt to QBO"
   task pushing_data_to_qbo: :environment do
-    date_range = ['2017-03-20 00:00:00 EST', '2017-03-20 11:59:59 EST']
+    date_range = ['2017-08-01 00:00:00 EST', '2017-08-31 23:59:59 EST']
     environment = Rails.env
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
     run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
     MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
-    MagentoQboMethods.new.push_qbo_refund_receipt_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
 
   desc 'Get Specific order data'

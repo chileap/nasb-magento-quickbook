@@ -13,6 +13,10 @@ class RunLog < ApplicationRecord
     where(run_type: 'sale_receipt')
   end
 
+  def self.refund_receipt
+    where(run_type: 'refund_receipt')
+  end
+
   def self.failed_orders
     where(status: 'failed')
   end

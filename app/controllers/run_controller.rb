@@ -17,8 +17,8 @@ class RunController < ApplicationController
   def show
     @success_sales_receipt = @run.run_logs.sale_receipt.success_orders.all.page(params[:page]).per(20)
     @failed_sales_receipt = @run.run_logs.sale_receipt.failed_orders.all.page(params[:page]).per(20)
-    @success_credits_memo = @run.run_logs.credit_memo.success_orders.all.page(params[:page]).per(20)
-    @failed_credits_memo = @run.run_logs.credit_memo.failed_orders.all.page(params[:page]).per(20)
+    @success_credits_memo = @run.run_logs.refund_receipt.success_orders.all.page(params[:page]).per(20)
+    @failed_credits_memo = @run.run_logs.refund_receipt.failed_orders.all.page(params[:page]).per(20)
   end
 
   def sales_receipt_report
@@ -27,8 +27,8 @@ class RunController < ApplicationController
   end
 
   def credits_memo_report
-    runlogs = @run.run_logs.credit_memo
-    send_data(xlsx_report(runlogs, 'creditmemo'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
+    runlogs = @run.run_logs.refund_receipt
+    send_data(xlsx_report(runlogs, 'refundreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
   end
 
   def find_run
@@ -45,9 +45,9 @@ class RunController < ApplicationController
     if type == 'salesreceipt'
       title = 'Sale Receipt'
     else
-      title = 'Credit Memo'
+      title = 'Refund Receipt'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.",'Credit Amount', 'Order Status','Billing Name ', 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", 'Credit Amount', 'Order Status','Billing Name ', 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
@@ -63,7 +63,7 @@ class RunController < ApplicationController
       if log.status === 'success'
         book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.credit_amount, log.order_status, log.billing_name, '']
       else
-        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A','N/A','N/A','N/A', log.message]
+        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A', 'N/A', 'N/A', 'N/A', log.message]
       end
     end
 
