@@ -23,7 +23,11 @@ module Concerns::MagentoRestApiToken
     m.get(args[:authorize_url]) do |login_page|
       auth_page = login_page.form_with(action: "#{args[:authentication_data][:url]}/index.php/admin/#{ENV['ADMIN_URL_SLASH']}/oauth_authorize/index/") do |form|
         form.elements[2].value = args[:authentication_data][:username]
-        form.elements[3].value = args[:authentication_data][:password]
+        if Rails.env == 'production'
+          form.elements[4].value = args[:authentication_data][:password]
+        else
+          form.elements[3].value = args[:authentication_data][:password]
+        end
       end.submit
       authorize_form = auth_page.forms[0]
       @callback_page = authorize_form.submit
