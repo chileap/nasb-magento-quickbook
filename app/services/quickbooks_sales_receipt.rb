@@ -56,7 +56,7 @@ class QuickbooksSalesReceipt
     list_of_customer_orders.each do |order|
       customer_receipt = check_if_sales_receipts_existed(order["customer_id"], "M-#{order["increment_id"]}")
 
-      if customer_receipt.blank?
+      if customer_receipt.blank? && order["increment_id"].first(2) != '90'
         create_new_sales_receipts(order, run_report)
       else
         puts 'sales receipt already created'

@@ -56,7 +56,7 @@ class QuickbooksRefundReceipt
     list_of_customer_orders.each do |order|
       customer_receipt = check_if_refund_receipt_existed(order["customer_id"], "C-#{order["increment_id"]}")
 
-      if customer_receipt.blank?
+      if customer_receipt.blank? && order["increment_id"].first(2) != '90'
         create_new_refund_receipt(order, run_report)
       else
         puts 'refund receipt already created'
