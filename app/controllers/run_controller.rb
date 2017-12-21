@@ -28,7 +28,7 @@ class RunController < ApplicationController
 
   def credits_memo_report
     runlogs = @run.run_logs.refund_receipt
-    send_data(xlsx_report(runlogs, 'refundreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-CreditMemo-RunID-#{@run.id}.xls")
+    send_data(xlsx_report(runlogs, 'refundreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-Refund Receipts-RunID-#{@run.id}.xls")
   end
 
   def find_run
@@ -47,7 +47,7 @@ class RunController < ApplicationController
     else
       title = 'Refund Receipt'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", 'Credit Amount', 'Order Status','Billing Name ', 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
