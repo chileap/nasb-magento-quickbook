@@ -64,9 +64,9 @@ class QuickbooksRefundReceipt
     end
   end
 
-  def check_if_refund_receipt_existed(customer_id, customer_refund)
-    refunds = @refund_receipt_service.query("select * from RefundReceipt where id = '#{customer_id}'").entries
-    refunds.find{ |refund_receipt| refund_receipt.customer_refund == customer_refund }
+  def check_if_refund_receipt_existed(customer_id, customer_memo)
+    refunds = @refund_receipt_service.query("select * from RefundReceipt where CustomerRef = '#{customer_id}'").entries
+    refunds.find{ |refund_receipt| refund_receipt.customer_memo == customer_memo }
   end
 
   def create_new_refund_receipt(order, run_report)
@@ -149,7 +149,7 @@ class QuickbooksRefundReceipt
 
     if order["base_shipping_amount"] != "0.0000"
       if order["status"] == "closed"
-        if !order['order_items'].pluck('qty_shipped').any?{|qty| qty != ship_qty}
+        if order['order_items'].pluck('qty_ordered') == order['order_items'].pluck('qty_refunded')
           shipping_price = QuickbooksRefundReceipt.new.line_item_details(service_with_token, order["base_shipping_amount"], product_name["shipping_name"], tax_info)
           refund_receipt.line_items << shipping_price
         end
