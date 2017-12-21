@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170825045211) do
+ActiveRecord::Schema.define(version: 20171221044554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,7 +54,14 @@ ActiveRecord::Schema.define(version: 20170825045211) do
     t.decimal  "credit_amount"
     t.string   "order_status"
     t.string   "billing_name"
+    t.decimal  "order_amount",  default: "0.0"
     t.index ["run_id"], name: "index_run_logs_on_run_id", using: :btree
+  end
+
+  create_table "run_task_settings", force: :cascade do |t|
+    t.integer  "run_task_setting_type"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
   end
 
   create_table "runs", force: :cascade do |t|
@@ -63,6 +70,13 @@ ActiveRecord::Schema.define(version: 20170825045211) do
     t.datetime "updated_at", null: false
     t.datetime "start_date"
     t.datetime "end_date"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.string   "magento_tax_code"
+    t.string   "qbo_tax_code"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
   end
 
   create_table "users", force: :cascade do |t|

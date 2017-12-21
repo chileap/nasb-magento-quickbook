@@ -47,7 +47,7 @@ class RunController < ApplicationController
     else
       title = 'Refund Receipt'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'])
+    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'])
 
     runlogs.map do |log|
       qbo_link = log.qbo_id
@@ -61,9 +61,9 @@ class RunController < ApplicationController
         magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
       end
       if log.status === 'success'
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.credit_amount, log.order_status, log.billing_name, '']
+        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
       else
-        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A', 'N/A', 'N/A', 'N/A', log.message]
+        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
       end
     end
 
