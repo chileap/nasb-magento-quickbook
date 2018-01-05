@@ -6,10 +6,6 @@ class RunController < ApplicationController
     @current_failed = OrderLog.current_failed
   end
 
-  def settings
-    
-  end
-
   def errors
     @error_reports = OrderLog.current_failed.all.page(params[:page]).per(20)
   end

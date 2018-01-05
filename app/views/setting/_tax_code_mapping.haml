@@ -1,0 +1,45 @@
+.col.m10.col.s12.offset-m1
+  %h5.title.dark-purple-text 
+    Tax Code Mapping
+  .header-button
+    = link_to('Save', '#', class: 'btn')
+    = link_to('Cancel', root_path, class: 'btn orange')
+.col.m10.col.s12.offset-m1
+  %table
+    %thead
+      %tr
+        %th Magento Tax Codes
+        %th <->
+        %th QBO Tax Codes
+    %tbody
+      %tr
+        %td GST AB
+        %td
+        %td
+          .input-field.col.s12
+            %select
+              %option{:disabled => "disabled", :selected => "selected", :value => ""} Choose your option
+              %option{:value => "1"} Option 1
+              %option{:value => "2"} Option 2
+              %option{:value => "3"} Option 3
+
+      %tr
+        %td GST/PST AB
+        %td                  
+        %td 
+          .input-field.col.s12
+            %select
+              %option{:disabled => "disabled", :selected => "selected", :value => ""} Choose your option
+              %option{:value => "1"} Option 1
+              %option{:value => "2"} Option 2
+              %option{:value => "3"} Option 3
+      %tr
+        %td HST NL
+        %td
+        %td 
+          .input-field.col.s12
+            %select
+              %option{:disabled => "disabled", :selected => "selected", :value => ""} Choose your option
+              %option{:value => "1"} Option 1
+              %option{:value => "2"} Option 2
+              %option{:value => "3"} Option 3

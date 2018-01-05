@@ -1,6 +1,7 @@
-%section#setting-side-menu
-  %ul
-    %h5 
-      Settings
-    %li
-      = link_to "Tax Code Mapping", 'javascript:void(0)'
+%li
+  %a{:href => '#'}
+    %i.material-icons> settings
+    Settings
+%li
+  .divider
+= render '/setting/setting_menu'

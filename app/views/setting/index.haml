@@ -1,0 +1,11 @@
+%body
+  %header
+    %ul#slide-out.side-nav.fixed.side-menu
+      = render 'shared/settings_side_menu'
+        
+  %main
+    .container-fluid
+      .row
+        .sidenav-content-block
+          - link_url = action_name == 'index' ? SettingController.action_methods.sort.first : action_name
+          = render "/setting/#{link_url}"

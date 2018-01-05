@@ -4,6 +4,7 @@ MagentoQBO.Common =
     @_collapseButton()
     @_handleCollapseList()
     @_handleBtnDropDown()
+    @_handleSelectTag()
 
   _toast: ->
     dataToast = ''
@@ -27,3 +28,7 @@ MagentoQBO.Common =
     $( document ).ready( ->
       $('.collapsible').collapsible();
     )
+
+  _handleSelectTag: ->
+    $(document).ready ->
+      $('select').material_select()

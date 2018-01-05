@@ -1,20 +1,75 @@
-section#setting-side-menu {
-  color: darkcyan;
-  margin-left: -10px;
-  padding: 20px 30px;
-  height: 96vh;
-  -moz-box-shadow: inset -5px -12px 27px 0px rgba(97,95,97,1);
-  box-shadow: inset -5px -12px 27px 0px rgba(97,95,97,1);
-  position: fixed;
-  li {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-bottom: 15px;
-    a {
-      color: darkcyan;
-      &:hover, &:active {
-        color: red;
-      }
+header, main, footer {
+  padding-left: 300px;
+}
+
+header {
+  .button-collapse {
+    margin-left: 20px !important;
+  }
+}
+nav{
+  #user-menu.dropdown-content .subdropdown-content {
+    text-indent: 1rem;
+  }
+}
+main{
+  padding-left: 310px;
+  .title {
+    margin-bottom: 20px;
+    @media (min-width: 768px) {
+      float: left;
     }
+  }
+  table {
+    td {
+      padding: 0px !important;
+    }
+    input.select-dropdown {
+      margin: 0px !important;
+      padding: 0px !important;
+      border: none !important;
+    }
+  }
+
+  .header-button{
+    @media (min-width: 768px) {
+      margin-top: 0.8rem;
+      float: right;
+    }
+  }
+
+  .sidenav-content-block {
+    margin-top: 1rem;
+    @media (min-width: 993px) {
+      margin-top: 2rem;
+    }
+  }
+  
+}
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0;
+  }
+}
+.side-menu {
+  margin-top: 117px; 
+}
+.side-nav {
+  li > a.active {
+    background-color: #F5F5F5;
+  }
+}
+.side-menu-production {
+  margin-top: 65px;  
+}
+@media only screen and (max-width : 425px) {
+  .side-menu-staging {
+    margin-top: 122px;  
+  }
+  .side-menu-production {
+    margin-top: 65px;  
+  }
+  main .title {
+    margin-top: 10px !important;
   }
 }

@@ -1,0 +1,8 @@
+- SettingController.action_methods.sort.each do |action_method|
+  - if action_method != 'index'
+    %li
+      - link_url = "/setting/#{action_method}"
+      - css_class = 'waves-effect' + (action_method == action_name ? ' active' : '')
+      = link_to link_url, class: css_class do
+        %i.material-icons
+        #{action_method.gsub(/_/,' ').titleize}

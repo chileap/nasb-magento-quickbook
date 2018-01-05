@@ -3,9 +3,13 @@
     %li
       = link_to 'Logout', destroy_user_session_path, method: :delete
     %li
-      = link_to 'Settings', '/settings'
+      = link_to '#' do
+        Setting
+      %ul.subdropdown-content
+        = render '/setting/setting_menu'
+
   %ul#user-menu-desktop.dropdown-content
     %li
       = link_to 'Logout', destroy_user_session_path, method: :delete
     %li
-      = link_to 'Settings', '/settings'
+      = link_to 'Setting', '/setting'
