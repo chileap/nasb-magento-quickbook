@@ -236,6 +236,9 @@ class QuickbooksSalesReceipt
       item_name = 'Product Sale - Canuk'
       shipping_name = "Shipping & Delivery Income - Canuk"
       processing_fee = "Processing Fee - Canuk"
+    else
+      puts magento_number
+      puts 'Invoive dose not exited!!!!'
     end
     product_name["processing_fee"] = processing_fee
     product_name["product_name"] = item_name
