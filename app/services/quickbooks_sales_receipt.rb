@@ -228,7 +228,7 @@ class QuickbooksSalesReceipt
       item_name = "Product Sale"
       shipping_name = "Shipping & Delivery Income"
       processing_fee = "Processing Fee - Mail"
-    elsif magento_number.first(2) == '40'
+    elsif magento_number.first(2) == '40' || magento_number.first(2) == '70'
       item_name = 'Product Sale - CC Nexus'
       shipping_name = "Shipping & Delivery Income - CC Nexus"
       processing_fee = "Processing Fee - CC Nexus"
