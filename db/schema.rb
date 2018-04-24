@@ -58,12 +58,6 @@ ActiveRecord::Schema.define(version: 20171221044554) do
     t.index ["run_id"], name: "index_run_logs_on_run_id", using: :btree
   end
 
-  create_table "run_task_settings", force: :cascade do |t|
-    t.integer  "run_task_setting_type"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
   create_table "runs", force: :cascade do |t|
     t.datetime "run_date"
     t.datetime "created_at", null: false
