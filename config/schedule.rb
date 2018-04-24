@@ -22,6 +22,10 @@
 set :environment, ENV['RAILS_ENV']
 set :output, { error: 'log/cron_error_log.log', standard: 'log/cron_log.log' }
 
-every 1.day, at: '1:00 am' do
-  rake "magento_quickbooks_integrator:pushing_data_to_qbo"
+# every 1.day, at: '1:00 am' do
+#   rake "magento_quickbooks_integrator:pushing_data_to_qbo"
+# end
+
+every 2.hours do
+	rake "magento_quickbooks_integrator:pushing_data_to_qbo"
 end
