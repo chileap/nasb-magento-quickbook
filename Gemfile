@@ -17,6 +17,7 @@ gem 'haml',                         '~> 4.0.7'
 gem 'haml-rails'
 gem 'kaminari',                     '~> 0.17.0'
 gem 'materialize-sass',             '~> 0.97.7'
+gem 'whenever', require: false
 
 gem 'magento_soap_api',            path: 'magento_soap_api'
 gem 'mechanize',                   '~> 2.7.5'
