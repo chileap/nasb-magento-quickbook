@@ -51,8 +51,8 @@ namespace :magento_quickbooks_integrator do
 
   desc 'Pushing credit memo to QBO'
   task pushing_credit_memos_to_qbo: :environment do
-    date_start = Date.today.to_s+" 00:00:00 EST";
-    date_end = Date.today.to_s+" 23:59:59 EST";
+    date_start = Date.current.yesterday.to_s+" 00:00:00 EST";
+    date_end = Date.current.yesterday.to_s+" 23:59:59 EST";
 
     date_range = [date_start, date_end]
     environment = Rails.env
