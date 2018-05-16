@@ -85,10 +85,10 @@ class MagentoQboMethods
     # QuickbooksCreditsMemo.new.pushing_credit_memo_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
     # puts 'End of credit memo processing'
 
-    if magento_order_with_status_close.count > 0
+    if !magento_order_with_status_close.nil? && magento_order_with_status_close.count > 0
       QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_order_with_status_close, authentication_data[:qbo_auth], access_token)
-      puts 'End of create refund receipt processing'
     end
+    puts 'End of create refund receipt processing'
   end
 
   def push_qbo_refund_receipt_from_magento_orders(date_range, authentication_data, environment, run_report)
