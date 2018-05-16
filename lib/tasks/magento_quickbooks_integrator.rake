@@ -63,8 +63,8 @@ namespace :magento_quickbooks_integrator do
 
   desc "Pushing sale receipt and refund receipt to QBO"
   task pushing_data_to_qbo: :environment do
-    date_start = Date.today.to_s+" 00:00:00 EST";
-    date_end = Date.today.to_s+" 23:59:59 EST";
+    date_start = Date.current.yesterday.to_s+" 00:00:00 EST";
+    date_end = Date.current.yesterday.to_s+" 23:59:59 EST";
 
     date_range = [date_start, date_end]
     environment = Rails.env
