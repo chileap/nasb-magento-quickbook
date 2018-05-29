@@ -26,7 +26,7 @@ module Concerns::MagentoRestApiToken
         if Rails.env == 'production'
           form.elements[4].value = args[:authentication_data][:password]
         else
-          form.elements[3].value = args[:authentication_data][:password]
+          form.elements[4].value = args[:authentication_data][:password]
         end
       end.submit
       authorize_form = auth_page.forms[0]
