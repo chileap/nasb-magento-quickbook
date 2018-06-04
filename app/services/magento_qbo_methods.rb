@@ -48,16 +48,18 @@ class MagentoQboMethods
     # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
     magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
 
-    # magento_order_with_status_close = []
-    # magento_orders.map do |order|
-    #   order_status = order.last['status']
-    
-    #   if order_status == 'closed'
-    #     magento_order_with_status_close.push(order)
-    #   end
-    # end
+    magento_order_without_store_name = []
+    magento_orders.map do |order|
+      store_name = order.last['store_name'].to_s
+      if store_name.exclude?"Store 1" and store_name.exclude?"Store 2" and store_name.exclude?"Store 3" and store_name.exclude?"Store 4" and store_name.exclude?"Store 5" 
+        magento_order_without_store_name.push(order)
+        puts store_name
+      end
+    end
 
-    QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
+    if !magento_order_without_store_name.nil? && magento_order_without_store_name.count > 0
+      QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, magento_order_without_store_name, authentication_data[:qbo_auth], access_token)
+    end
     puts 'End of sale receipt processing'
 
     # if magento_order_with_status_close.count > 0
@@ -76,9 +78,11 @@ class MagentoQboMethods
     magento_order_with_status_close = []
     magento_orders.map do |order|
       order_status = order.last['status']
-    
+      store_name = order.last['store_name'].to_s
       if order_status == 'closed'
-        magento_order_with_status_close.push(order)
+        if store_name.exclude?"Store 1" and store_name.exclude?"Store 2" and store_name.exclude?"Store 3" and store_name.exclude?"Store 4" and store_name.exclude?"Store 5" 
+          magento_order_with_status_close.push(order)
+        end
       end
     end
 
