@@ -122,7 +122,7 @@ class MagentoQboMethods
     puts "end of finding. There are #{errors_orders.count} error from last time"
 
     puts 'get order from magento that need to push today'
-    invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(authentication_magento_data, state: '2', start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
+    invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(authentication_magento_data, start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
     puts invoice_list.count
 
     magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)

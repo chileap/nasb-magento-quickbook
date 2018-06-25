@@ -1,0 +1,19 @@
+= simple_form_for :state, url: update_state_state_index_path, method: :put do |f|
+  .col.m8.col.s12.offset-m2
+    %h5.title.dark-purple-text 
+      Exclude Invoice Status
+    .header-button
+      = f.submit 'Save', class: 'btn'
+      = link_to('Cancel', root_path, class: 'btn orange')
+  .col.m8.col.s12.offset-m2
+    %table
+      %thead
+        %tr
+          %th Invoice Status
+          %th Checked
+      - @states.each do |s|
+        %tbody
+          %tr
+            %td= s.name.html_safe
+            %td
+              = f.input :checked, label: false, as: :boolean, input_html: { name: "state[#{s.id}]", :checked => s.checked ? true : false }

@@ -1,15 +1,8 @@
 - if user_signed_in?
-  %ul#user-menu.dropdown-content
-    %li
-      = link_to 'Logout', destroy_user_session_path, method: :delete
-    %li
-      = link_to '#' do
-        Setting
-      %ul.subdropdown-content
-        = render '/setting/setting_menu'
-
   %ul#user-menu-desktop.dropdown-content
     %li
       = link_to 'Logout', destroy_user_session_path, method: :delete
     %li
-      = link_to 'Setting', '/setting'
+      = link_to 'Exclude Store', '/store'
+    %li
+      = link_to 'Exclude Status', '/state'

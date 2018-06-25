@@ -6,3 +6,4 @@
 #= require util
 #= require initializer
 #= require common
+#= require materialize-form

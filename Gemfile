@@ -26,6 +26,7 @@ gem 'pry'
 gem 'quickbooks-ruby',             '~> 0.4.8'
 gem 'rubyntlm',                    '~> 0.3.2'
 gem 'simple_form',                 '~> 3.4.0'
+gem 'materialize-form'
 gem 'spreadsheet',                 '~> 1.1.4'
 
 gem 'capybara',                     '~> 2.10.1'

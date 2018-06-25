@@ -320,6 +320,7 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
+    materialize-form (1.0.8)
     materialize-sass (0.97.8)
       sass (~> 3.3)
     mechanize (2.7.5)
@@ -561,6 +562,7 @@ DEPENDENCIES
   letter_opener (~> 1.4.1)
   listen
   magento_soap_api!
+  materialize-form
   materialize-sass (~> 0.97.7)
   mechanize (~> 2.7.5)
   oauth (~> 0.4.7)
