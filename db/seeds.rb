@@ -38,18 +38,18 @@ State.create([
 ])
 
 Store.create([
-	{ name: 'True North Seedbank&nbsp;&nbsp;&nbsp;&nbsp;TNSB (Phone Orders)&nbsp;&nbsp;&nbsp;&nbsp;TNSB (Phone Orders)' },
-	{ name: 'True North Seedbank&nbsp;&nbsp;&nbsp;&nbsp;True North Seedbank&nbsp;&nbsp;&nbsp;&nbsp;True North Seedbank' },
-	{ name: 'True North Seedbank&nbsp;&nbsp;&nbsp;&nbsp;True North Seedbank&nbsp;&nbsp;&nbsp;&nbsp;French' },
-	{ name: 'TNSB (Mail Orders)&nbsp;&nbsp;&nbsp;&nbsp;TNSB (Mail Orders)&nbsp;&nbsp;&nbsp;&nbsp;TNSB (Mail Orders)' },
-	{ name: 'CC Nexus&nbsp;&nbsp;&nbsp;&nbsp;CC Nexus&nbsp;&nbsp;&nbsp;&nbsp;CC Nexus' },
-	{ name: 'CC Nexus&nbsp;&nbsp;&nbsp;&nbsp;CC Nexus&nbsp;&nbsp;&nbsp;&nbsp;French' },
-	{ name: 'Canuk Seeds&nbsp;&nbsp;&nbsp;&nbsp;Canuk Seeds&nbsp;&nbsp;&nbsp;&nbsp;French' },
-	{ name: 'Canuk Seeds&nbsp;&nbsp;&nbsp;&nbsp;Canuk Seeds&nbsp;&nbsp;&nbsp;&nbsp;Canuk Seeds' },
-	{ name: 'Oasis Genetics&nbsp;&nbsp;&nbsp;&nbsp;Oasis Genetics&nbsp;&nbsp;&nbsp;&nbsp;Oasis Genetics' },
-	{ name: 'Store&nbsp;&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;&nbsp;Store 1' },
-	{ name: 'Store&nbsp;&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;&nbsp;Store 2' },
-	{ name: 'Store&nbsp;&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;&nbsp;Store 3' },
-	{ name: 'Store&nbsp;&nbsp;&nbsp;&nbsp;Store&nbsp;&nbsp;&nbsp;&nbsp;Store 4' },
+	{ name: "True North Seedbank\nTNSB (Phone Orders)\nTNSB (Phone Orders)" },
+	{ name: "True North Seedbank\nTrue North Seedbank\nTrue North Seedbank" },
+	{ name: "True North Seedbank\nTrue North Seedbank\nFrench" },
+	{ name: "TNSB (Mail Orders)\nTNSB (Mail Orders)\nTNSB (Mail Orders)" },
+	{ name: "CC Nexus\nCC Nexus\nCC Nexus" },
+	{ name: "CC Nexus\nCC Nexus\nFrench" },
+	{ name: "Canuk Seeds\nCanuk Seeds\nFrench" },
+	{ name: "Canuk Seeds\nCanuk Seeds\nCanuk Seeds" },
+	{ name: "Oasis Genetics\nOasis Genetics\nOasis Genetics" },
+	{ name: "Store\nStore\nStore 1" },
+	{ name: "Store\nStore\nStore 2" },
+	{ name: "Store\nStore\nStore 3" },
+	{ name: "Store\nStore\nStore 4" },
 ])
 
