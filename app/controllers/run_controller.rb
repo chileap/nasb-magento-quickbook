@@ -34,39 +34,42 @@ class RunController < ApplicationController
   private
 
   def xlsx_report(runlogs, type)
-    book = Spreadsheet::Workbook.new
-    book.create_worksheet
-    index = 0
     title = nil
     if type == 'salesreceipt'
       title = 'Sale Receipt'
     else
       title = 'Refund Receipt'
     end
-    book.worksheet(0).insert_row(index, ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'])
 
-    runlogs.map do |log|
-      qbo_link = log.qbo_id
-      magento_link = log.magento_id
-      if !qbo_link.nil?
-        qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
+    axlsx_package = Axlsx::Package.new 
+    workbook = axlsx_package.workbook
+    workbook.add_worksheet do |sheet|
+      sheet.add_row ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message']
+      runlogs.map do |log|
+        qbo_link = log.qbo_id
+        magento_link = log.magento_id
+        if !qbo_link.nil?
+          qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
+        end
+        if Rails.env.production?
+          magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
+        else
+          magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
+        end
+        if log.status === 'success'
+          sheet.add_row [magento_link, qbo_link, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
+        else
+          sheet.add_row [magento_link, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
+        end
       end
-      if Rails.env.production?
-        magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
-      else
-        magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
-      end
-      if log.status === 'success'
-        book.worksheet(0).insert_row (index + 1), [magento_link, qbo_link, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
-      else
-        book.worksheet(0).insert_row (index + 1), [magento_link, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
-      end
+      sheet.auto_filter = "A1:G#{runlogs.count+1}"
+
     end
 
     buffer = StringIO.new
-    book.write(buffer)
-    buffer.rewind
-    buffer.read
+    axlsx_package.use_shared_strings = true
+    buffer.write(axlsx_package.to_stream.read)
+    buffer.string
   end
 
 end
