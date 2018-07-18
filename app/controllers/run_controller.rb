@@ -42,28 +42,44 @@ class RunController < ApplicationController
     end
 
     axlsx_package = Axlsx::Package.new 
-    workbook = axlsx_package.workbook
-    workbook.add_worksheet do |sheet|
-      sheet.add_row ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message']
-      runlogs.map do |log|
-        qbo_link = log.qbo_id
-        magento_link = log.magento_id
-        if !qbo_link.nil?
-          qbo_link = Spreadsheet::Link.new "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}", log.doc_number.nil? ? log.qbo_id : log.doc_number
-        end
-        if Rails.env.production?
-          magento_link = Spreadsheet::Link.new "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
-        else
-          magento_link = Spreadsheet::Link.new "http://magento-114327-325729.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/", log.magento_id
-        end
-        if log.status === 'success'
-          sheet.add_row [magento_link, qbo_link, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
-        else
-          sheet.add_row [magento_link, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
+    axlsx_package.workbook do |workbook|
+      workbook.styles do |s|
+        wrap_text = s.add_style :alignment => { :horizontal => :center,
+                                                :vertical => :center ,
+                                                :wrap_text => true}
+
+        workbook.add_worksheet do |sheet|
+          sheet.add_row ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'], style: wrap_text
+          index = 1
+          runlogs.map do |log|
+            index = index + 1
+            qbo_link = log.qbo_id
+            magento_link = log.magento_id
+
+            if !qbo_link.nil?
+              qbo_link = "https://ca.qbo.intuit.com/app/#{type}?txnId=#{log.qbo_id}"
+              sheet.add_hyperlink :location => qbo_link, :ref => "B#{index}"
+            end
+
+            if Rails.env.production?
+              magento_link = "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/"
+            else
+              magento_link = "http://magento-170606-493300.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/"
+            end
+
+            sheet.add_hyperlink location: magento_link, ref: "A#{index}"
+
+            if log.status === 'success'
+              sheet.add_row [log.magento_id, log.qbo_id, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
+            else
+              sheet.add_row [log.magento_id, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
+            end
+            # sheet.add_hyperlink :location => qbo_link, :ref => sheet.rows.second.cells.first
+          end
+          sheet.auto_filter = "A1:G#{runlogs.count+1}"
+
         end
       end
-      sheet.auto_filter = "A1:G#{runlogs.count+1}"
-
     end
 
     buffer = StringIO.new
