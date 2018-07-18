@@ -107,7 +107,11 @@ class QuickbooksRefundReceipt
     refund_receipt.private_note = "C-#{order["increment_id"]}"
     refund_receipt.customer_memo = "C-#{order["increment_id"]}"
     refund_receipt.currency_id = order["base_currency_code"]
-    refund_receipt.deposit_to_account_ref = Quickbooks::Model::BaseReference.new('4', name: 'Undeposited Funds')
+    if Rails.env == 'production'
+      refund_receipt.deposit_to_account_ref = Quickbooks::Model::BaseReference.new('62', name: 'Undeposited Funds')
+    else
+      refund_receipt.deposit_to_account_ref = Quickbooks::Model::BaseReference.new('4', name: 'Undeposited Funds')
+    end
     total_amount = 0
     total_refunded = 0
 
