@@ -12,7 +12,7 @@ MagentoQBO.Common =
       dataToast = $('#flash_notice').text()
     else if $('#flash_alert').text() != ''
       dataToast = $('#flash_alert').text()
-    Materialize.toast(dataToast, 5000)
+    Materialize.toast(dataToast, 2000)
 
   _collapseButton: ->
     $( document ).ready( ->
