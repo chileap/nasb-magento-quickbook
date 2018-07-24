@@ -2,6 +2,11 @@ Rails.application.routes.draw do
   devise_for :users, :controllers => { :registrations => "registrations" }
   root to: 'run#index'
 
+  resources :users do
+    post :new_user, on: :collection
+    put :update_user
+  end
+
   resources :run do
     get :sales_receipt_report
     get :credits_memo_report

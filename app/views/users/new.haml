@@ -1,0 +1,14 @@
+= title('Create User')
+.row.spacing-top
+  .col.s12.m8.offset-m2
+    .card
+      .card-title.card-header
+        %h3 Create User
+      = simple_form_for(@user, url: new_user_users_path, html: { method: :post }) do |f|
+        .card-content
+          .form-inputs.row
+            = f.input :email, required: true, autofocus: true,  wrapper_html: { class: 'input-field col s12' }
+            = f.input :password, required: true,  wrapper_html: { class: 'input-field col s12' }
+            = f.input :password_confirmation, required: true,  wrapper_html: { class: 'input-field col s12' }
+        .card-action
+          = f.button :submit, 'Submit'
