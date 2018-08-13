@@ -17,7 +17,7 @@
       %ul#nav-mobile.side-nav
         - if user_signed_in?
           %li
-            = link_to '#', { class: 'dropdown-button', 'data-activates': 'user-menu'} do
+            = link_to '#', { class: 'dropdown-button', 'data-activates': 'user-menu-desktop'} do
               = current_user.email
               %i.material-icons.right
                 arrow_drop_down
