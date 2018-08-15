@@ -19,7 +19,7 @@
               %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
         %ul.collapsible{"data-collapsible" => "accordion"}
           %li.active
-            .collapsible-header.active
+            .collapsible-header.active.failure
               Failures
               = @run.run_logs.sale_receipt.failed_orders.size
             .collapsible-body
@@ -41,7 +41,7 @@
                 = paginate @failed_sales_receipt
 
           %li
-            .collapsible-header
+            .collapsible-header.success
               Successful
               = @run.run_logs.sale_receipt.success_orders.size
             .collapsible-body
@@ -73,7 +73,7 @@
               %i.small.material-icons{:style => "line-height: 2;"} ic_file_download
         %ul.collapsible{"data-collapsible" => "accordion"}
           %li.active
-            .collapsible-header.active
+            .collapsible-header.active.failure
               Failures
               = @run.run_logs.refund_receipt.failed_orders.size
             .collapsible-body
@@ -95,7 +95,7 @@
                 = paginate @failed_credits_memo
 
           %li
-            .collapsible-header
+            .collapsible-header.success
               Successful
               = @run.run_logs.refund_receipt.success_orders.size
             .collapsible-body
