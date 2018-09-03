@@ -72,7 +72,7 @@ class MagentoQboMethods
 
   def push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     access_token = RecordToken.where(type_token: environment).first
-
+    include_stores = Store.where(checked: false).pluck(:name)
     puts 'Start running pushing credit memo'
     # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
     magento_orders = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
@@ -81,7 +81,8 @@ class MagentoQboMethods
     magento_orders.map do |order|
       store_name = order.last['store_name']
       store_status = order.last['status']
-      if include_stores.include?store_name and store_status == 'closed'
+      # if include_stores.include?store_name and store_status == 'closed'
+      if store_status == 'closed'
         magento_order_with_status_close.push(order)
         puts store_name
       end
