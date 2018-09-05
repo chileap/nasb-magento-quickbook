@@ -60,6 +60,7 @@ class QuickbooksSalesReceipt
         create_new_sales_receipts(order, run_report)
       else
         puts 'sales receipt already created'
+        RunLog.where(order_id: order["entity_id"]).update_all(order_date: order["created_at"])
       end
     end
   end
@@ -149,7 +150,7 @@ class QuickbooksSalesReceipt
       sales_receipt_upload = @sale_receipt_service.create(sales_receipt)
       puts "#{sales_receipt_upload.id}  #{sales_receipt_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
       sales_receipt_id = sales_receipt_upload.id
-      run_log = run_report.run_logs.create!(order_amount: order['base_grand_total'],credit_amount: sales_receipt_upload.total, order_status: order["status"], billing_name: sales_receipt_upload.customer_ref.name , magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success')
+      run_log = run_report.run_logs.create!(order_amount: order['base_grand_total'],credit_amount: sales_receipt_upload.total, order_status: order["status"], billing_name: sales_receipt_upload.customer_ref.name , magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success', order_date: order["created_at"])
     rescue Exception => e
       puts e.message
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"

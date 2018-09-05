@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180622013632) do
+ActiveRecord::Schema.define(version: 20180904075802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,8 @@ ActiveRecord::Schema.define(version: 20180622013632) do
     t.string   "order_status"
     t.string   "billing_name"
     t.decimal  "order_amount",  default: "0.0"
+    t.datetime "order_date"
+    t.datetime "invoice_date"
     t.index ["run_id"], name: "index_run_logs_on_run_id", using: :btree
   end
 

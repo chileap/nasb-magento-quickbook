@@ -67,7 +67,7 @@ namespace :magento_quickbooks_integrator do
     date_end = Date.current.yesterday.to_s+" 23:59:59 EST";
 
     # date_range = [date_start, date_end]
-    date_range = ['2018-04-24 00:00:00 EST', '2018-04-24 23:59:59 EST']
+    date_range = ['2018-08-01 00:00:00 EST', '2018-08-31 23:59:59 EST']
     environment = Rails.env
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
     run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])

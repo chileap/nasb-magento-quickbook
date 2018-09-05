@@ -60,6 +60,7 @@ class QuickbooksRefundReceipt
         create_new_refund_receipt(order, run_report)
       else
         puts 'refund receipt already created'
+        RunLog.where(order_id: order["entity_id"]).update_all(invoice_date: order["invoice_date"])
       end
     end
   end
@@ -174,7 +175,7 @@ class QuickbooksRefundReceipt
       refund_receipt_upload = @refund_receipt_service.create(refund_receipt)
       puts "#{refund_receipt_upload.id}  #{refund_receipt_upload.doc_number}  #{order["entity_id"]}  #{order["customer_id"]}"
       credit_memo_id = refund_receipt_upload.id
-      run_log = run_report.run_logs.create!(order_amount: order['base_grand_total'], credit_amount: refund_receipt_upload.total,order_status: order["status"],billing_name: refund_receipt_upload.customer_ref.name,magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: refund_receipt_upload.id, status: 'success', run_type: 'refund_receipt', doc_number: refund_receipt_upload.doc_number)
+      run_log = run_report.run_logs.create!(order_amount: order['base_grand_total'], credit_amount: refund_receipt_upload.total,order_status: order["status"],billing_name: refund_receipt_upload.customer_ref.name,magento_id: order["increment_id"], order_id: order["entity_id"], qbo_id: refund_receipt_upload.id, status: 'success', run_type: 'refund_receipt', doc_number: refund_receipt_upload.doc_number, invoice_date: order["invoice_date"])
     rescue Exception => e
       puts e.message
       puts "this #{order["entity_id"]} #{order["customer_id"]} is failed"
