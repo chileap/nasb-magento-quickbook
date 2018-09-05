@@ -35,10 +35,13 @@ class RunController < ApplicationController
 
   def xlsx_report(runlogs, type)
     title = nil
+    date_title = nil
     if type == 'salesreceipt'
       title = 'Sale Receipt'
+      date_title = 'Order Date'
     else
       title = 'Refund Receipt'
+      date_title = 'Refund Date'
     end
 
     axlsx_package = Axlsx::Package.new 
@@ -49,7 +52,7 @@ class RunController < ApplicationController
                                                 :wrap_text => true}
 
         workbook.add_worksheet do |sheet|
-          sheet.add_row ['Magento No.', "#{title} No.", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'], style: wrap_text
+          sheet.add_row ['Magento No.', "#{title} No.", "#{date_title}", "Order Amount" , "#{title} Amount", 'Order Status','Billing Name ', 'Error Message'], style: wrap_text
           index = 1
           runlogs.map do |log|
             index = index + 1
@@ -70,9 +73,13 @@ class RunController < ApplicationController
             sheet.add_hyperlink location: magento_link, ref: "A#{index}"
 
             if log.status === 'success'
-              sheet.add_row [log.magento_id, log.qbo_id, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
+              order_date = log.order_date
+              if order_date.nil?
+                order_date = log.invoice_date
+              end
+              sheet.add_row [log.magento_id, log.qbo_id, order_date, log.order_amount, log.credit_amount, log.order_status, log.billing_name, '']
             else
-              sheet.add_row [log.magento_id, 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
+              sheet.add_row [log.magento_id, 'N/A', 'N/A' , 'N/A', 'N/A', 'N/A', 'N/A', log.message]
             end
             # sheet.add_hyperlink :location => qbo_link, :ref => sheet.rows.second.cells.first
           end
