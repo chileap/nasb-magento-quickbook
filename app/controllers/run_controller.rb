@@ -18,7 +18,7 @@ class RunController < ApplicationController
   end
 
   def sales_receipt_report
-    runlogs = @run.run_logs.sale_receipt
+    runlogs = @run.run_logs.sale_receipt.order(order_date: 'desc')
     send_data(xlsx_report(runlogs, 'salesreceipt'), filename: "#{@run.start_date.strftime("%B-%Y")}-SalesReceipt-RunID-#{@run.id}.xls")
   end
 
