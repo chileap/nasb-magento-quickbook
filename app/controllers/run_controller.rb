@@ -73,7 +73,7 @@ class RunController < ApplicationController
             sheet.add_hyperlink location: magento_link, ref: "A#{index}"
 
             if log.status === 'success'
-              order_date = log.order_date
+              order_date = (log.order_date - 4.hours).to_datetime
               if order_date.nil?
                 order_date = log.invoice_date
               end
