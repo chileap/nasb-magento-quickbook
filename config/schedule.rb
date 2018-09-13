@@ -27,6 +27,5 @@ set :output, { error: 'log/cron_error_log.log', standard: 'log/cron_log.log' }
 # end
 
 every 1.day, at: '2:00am', roles: [:app] do
-	puts 'service running'
 	rake "magento_quickbooks_integrator:pushing_data_to_qbo"
 end
