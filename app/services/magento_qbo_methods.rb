@@ -108,6 +108,9 @@ class MagentoQboMethods
 
     puts 'get order from magento that need to push today'
     invoice_list = MagentoInvoiceSoapApi.new.get_creditmemo_from_soap_api(authentication_magento_data, start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
+    if invoice_list.instance_of? Hash 
+      invoice_list = [invoice_list]
+    end
     puts invoice_list.count
 
     magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
