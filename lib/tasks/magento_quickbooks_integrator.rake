@@ -71,11 +71,11 @@ namespace :magento_quickbooks_integrator do
     environment = Rails.env
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
     run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
-    current_time = Time.zone.now + 11.hours
-    run_report.start_date = current_time
-    run_report.save
-    # MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
-    # MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
+    # current_time = Time.zone.now + 11.hours
+    # run_report.start_date = current_time
+    # run_report.save
+    MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
+    MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
 
   desc 'Get Specific order data'
