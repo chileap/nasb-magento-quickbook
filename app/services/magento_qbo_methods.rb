@@ -111,7 +111,12 @@ class MagentoQboMethods
     if invoice_list.instance_of? Hash 
       invoice_list = [invoice_list]
     end
-    puts invoice_list.count
+
+    if invoice_list.nil?
+      puts "Refund order of #{date_range[0]} to #{date_range[1]} are empty"
+    else
+      puts invoice_list.count
+    end
 
     magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
 

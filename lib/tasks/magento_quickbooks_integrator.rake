@@ -67,10 +67,11 @@ namespace :magento_quickbooks_integrator do
     date_end = Date.current.yesterday.to_s+" 23:59:59 EST";
 
     # date_range = [date_start, date_end]
-    date_range = ['2018-09-01 00:00:00 EST', '2018-09-12 23:59:59 EST']
+    date_range = ['2018-09-14 00:00:00 EST', '2018-09-14 23:59:59 EST']
     environment = Rails.env
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
-    run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    run_report = Run.find(175).update(start_date: date_range[0], end_date: date_range[1])
     MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
