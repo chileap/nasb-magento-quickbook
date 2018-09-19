@@ -75,6 +75,19 @@ namespace :magento_quickbooks_integrator do
     MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
   end
 
+  desc "Pushing monthly sale receipt and refund receipt to QBO"
+  task pushing_monthly_data_to_qbo: :environment do
+    date_start = Date.today.ago(1.month).beginning_of_month.to_s.gsub 'UTC', 'EST'
+    date_end = Date.today.ago(1.month).end_of_month.to_s.gsub 'UTC', 'EST'
+
+    date_range = [date_start, date_end]
+    environment = Rails.env
+    authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
+    run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
+    MagentoQboMethods.new.push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
+    MagentoQboMethods.new.push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
+  end
+
   desc 'Get Specific order data'
   task get_specific_order_id: :environment do
     puts "Total Run: #{Run.all.size}"
