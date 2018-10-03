@@ -80,7 +80,7 @@ namespace :magento_quickbooks_integrator do
     date_start = Date.today.ago(1.month).beginning_of_month.to_s.gsub 'UTC', 'EST'
     date_end = Date.today.ago(1.month).end_of_month.to_s.gsub 'UTC', 'EST'
 
-    date_range = [date_start.gsub ' -0400', '', date_end.gsub ' -0400', '']
+    date_range = [(date_start.gsub ' -0400', ' EST'), (date_end.gsub ' -0400', ' EST')]
     environment = Rails.env
     authentication_data = MagentoQboMethods.new.check_environment_authentication(environment)
     run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
