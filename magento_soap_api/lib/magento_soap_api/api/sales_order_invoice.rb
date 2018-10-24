@@ -33,5 +33,23 @@ module MagentoSoapApi
       orders.collection
     end
 
+    def invoice_shipment_list(params = {})
+      params.merge!(session_params)
+      document = MagentoSoapApi::Requests::InvoiceShipmentList.new(params)
+      request = MagentoSoapApi::Request.new(magento_url: params[:magento_url], call_name: :sales_order_shipment_list)
+      request.body = document.body
+      invoice = MagentoSoapApi::InvoiceShipmentList.new(request.connect!)
+      invoice.collection
+    end
+
+    def invoice_shipment_info(params = {})
+      params.merge!(session_params)
+      document = MagentoSoapApi::Requests::InvoiceShipmentInfo.new(params)
+      request = MagentoSoapApi::Request.new(magento_url: params[:magento_url], call_name: :sales_order_shipment_info)
+      request.body = document.body
+      invoice = MagentoSoapApi::InvoiceShipmentInfo.new(request.connect!)
+      invoice.item_invoice
+    end
+
   end
 end

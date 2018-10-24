@@ -50,6 +50,7 @@ class MagentoQboMethods
     magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
 
     magento_order_without_store_name = []
+    magento_order_removed = []
 
     if !magento_orders.nil?
       magento_orders.map do |order|
@@ -57,7 +58,10 @@ class MagentoQboMethods
         store_status = order.last['status'].titleize
         if include_stores.include?store_name and include_status.include?store_status
           magento_order_without_store_name.push(order)
-          puts store_name
+          puts "#{store_name} => #{store_status}"
+        else
+          magento_order_removed.push(order)
+          puts "#{store_name} => #{store_status}"
         end
       end
     end
@@ -138,7 +142,7 @@ class MagentoQboMethods
     puts "end of finding. There are #{errors_orders.count} error from last time"
 
     puts 'get order from magento that need to push today'
-    invoice_list = MagentoInvoiceSoapApi.new.get_invoices_from_soap_api(authentication_magento_data, start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
+    invoice_list = MagentoInvoiceSoapApi.new.get_invoice_shipment_from_soap_api(authentication_magento_data, start_date: date_range[0].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'), end_date: date_range[1].in_time_zone('UTC').strftime('%Y-%m-%d %H:%M:%S %Z'))
    
     if invoice_list.nil?
       puts "Sale order of #{date_range[0]} to #{date_range[1]} are empty"
@@ -146,9 +150,8 @@ class MagentoQboMethods
     else
       puts invoice_list.count
 
-      magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
+      magento_orders = MagentoRestApi.new.order_shipment_data(authentication_magento_data, invoice_list)
       magento_orders.merge!(errors_orders)
-      MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
       puts "total order with error #{magento_orders.count}"
       magento_orders
     end
