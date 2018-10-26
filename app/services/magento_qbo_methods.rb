@@ -60,7 +60,8 @@ class MagentoQboMethods
           puts "#{store_name} => #{store_status}"
         else
           message = "Unable to push order to QBO due to invalid status `#{order.last['status'].titleize}`"
-          run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
+          run_log = run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
+          OrderLog.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], last_runlog_id: run_log.id)
           puts "#{store_name} => #{store_status}"
         end
       end
@@ -70,39 +71,17 @@ class MagentoQboMethods
       QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, magento_order_without_store_name, authentication_data[:qbo_auth], access_token)
     end
     puts 'End of sale receipt processing'
-
-    # if magento_order_with_status_close.count > 0
-    #   QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_order_with_status_close, authentication_data[:qbo_auth], access_token)
-    #   puts 'End of sale receipt refund receipt processing'
-    # end
   end
 
   def push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     access_token = RecordToken.where(type_token: environment).first
     include_stores = Store.where(checked: false).pluck(:name)
+    
     puts 'Start running pushing credit memo'
-    # run_report = Run.create!(run_date: DateTime.now, start_date: date_range[0], end_date: date_range[1])
-    magento_orders = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
+    magento_credit_memo = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
 
-    magento_order_with_status_close = []
-
-    if !magento_orders.nil?
-      magento_orders.map do |order|
-        store_name = order.last['store_name']
-        store_status = order.last['status']
-        # if include_stores.include?store_name and store_status == 'closed'
-        if store_status == 'closed'
-          magento_order_with_status_close.push(order)
-          puts store_name
-        end
-      end
-    end
-
-    # QuickbooksCreditsMemo.new.pushing_credit_memo_from_magento(run_report, magento_orders, authentication_data[:qbo_auth], access_token)
-    # puts 'End of credit memo processing'
-
-    if !magento_order_with_status_close.nil? && magento_order_with_status_close.count > 0
-      QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_order_with_status_close, authentication_data[:qbo_auth], access_token)
+    if !magento_credit_memo.nil? && magento_credit_memo.count > 0
+      QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_credit_memo, authentication_data[:qbo_auth], access_token)
     end
     puts 'End of create refund receipt processing'
   end
@@ -124,15 +103,15 @@ class MagentoQboMethods
 
     if invoice_list.nil?
       puts "Refund order of #{date_range[0]} to #{date_range[1]} are empty"
-      magento_orders = invoice_list
+      magento_credit_memo = invoice_list
     else
       puts invoice_list.count
-      magento_orders = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
+      magento_credit_memo = MagentoRestApi.new.order_data(authentication_magento_data, invoice_list)
 
-      magento_orders.merge!(errors_orders)
-      MagentoRestApi.new.write_magento_order_to_excel(magento_orders)
-      puts "total credits memo with error #{magento_orders.count}"
-      magento_orders
+      magento_credit_memo.merge!(errors_orders)
+      MagentoRestApi.new.write_magento_order_to_excel(magento_credit_memo)
+      puts "total credits memo with error #{magento_credit_memo.count}"
+      magento_credit_memo
     end
   end
 
