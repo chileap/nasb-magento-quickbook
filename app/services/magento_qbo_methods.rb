@@ -50,7 +50,6 @@ class MagentoQboMethods
     magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
 
     magento_order_without_store_name = []
-    magento_order_removed = []
 
     if !magento_orders.nil?
       magento_orders.map do |order|
@@ -60,7 +59,8 @@ class MagentoQboMethods
           magento_order_without_store_name.push(order)
           puts "#{store_name} => #{store_status}"
         else
-          magento_order_removed.push(order)
+          message = "Unable to push order to QBO due to invalid status `#{order.last['status'].titleize}`"
+          run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
           puts "#{store_name} => #{store_status}"
         end
       end
