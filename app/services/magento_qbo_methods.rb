@@ -59,10 +59,12 @@ class MagentoQboMethods
           magento_order_without_store_name.push(order)
           puts "#{store_name} => #{store_status}"
         else
-          message = "Unable to push order to QBO due to invalid status `#{order.last['status'].titleize}`"
-          run_log = run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
-          OrderLog.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], last_runlog_id: run_log.id)
-          puts "#{store_name} => #{store_status}"
+          if include_stores.include?store_name
+            message = "Unable to push order to QBO due to invalid status `#{order.last['status'].titleize}`"
+            run_log = run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
+            OrderLog.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], last_runlog_id: run_log.id)
+            puts "#{store_name} => #{store_status}"
+          end
         end
       end
     end
@@ -76,7 +78,7 @@ class MagentoQboMethods
   def push_qbo_credit_memos_from_magento_orders(date_range, authentication_data, environment, run_report)
     access_token = RecordToken.where(type_token: environment).first
     include_stores = Store.where(checked: false).pluck(:name)
-    
+
     puts 'Start running pushing credit memo'
     magento_credit_memo = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
 
