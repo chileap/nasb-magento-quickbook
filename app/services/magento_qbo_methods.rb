@@ -59,7 +59,8 @@ class MagentoQboMethods
           magento_order_without_store_name.push(order)
           puts "#{store_name} => #{store_status}"
         else
-          if include_stores.include?store_name
+          run_log = RunLog.find_by(magento_id: order.last["increment_id"])
+          if include_stores.include?store_name && run_log.nil?
             message = "Unable to push order to QBO due to invalid status `#{order.last['status'].titleize}`"
             run_log = run_report.run_logs.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], status: 'failed', message: message)
             OrderLog.create!(magento_id: order.last["increment_id"], order_id: order.last["entity_id"], last_runlog_id: run_log.id)
