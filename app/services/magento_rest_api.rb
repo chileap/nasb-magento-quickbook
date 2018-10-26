@@ -71,11 +71,11 @@ class MagentoRestApi
     auth_token(authentication_data)
     puts "get magento Id #{increment_id}"
     orders = @access_token.get("/api/rest/orders?filter[0][attribute]=increment_id&filter[0][in]=#{increment_id}")
-    invoice = MagentoInvoiceSoapApi.new.get_specific_invoice_from_soap_api(authentication_data, increment_id)
+    # invoice = MagentoInvoiceSoapApi.new.get_specific_invoice_from_soap_api(authentication_data, increment_id)
     orders_json = JSON.parse(orders.body)
     orders_json.each do |_, order|
-      order['invoice_date'] = invoice[:created_at]
-      order['invoice_grand_total'] = invoice[:grand_total]
+      order['invoice_date'] = orders_json.first[1]['created_at']
+      order['invoice_grand_total'] = orders_json.first[1]['base_grand_total']
     end
     orders_json
   end
