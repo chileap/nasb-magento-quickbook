@@ -84,7 +84,17 @@ class MagentoQboMethods
     magento_credit_memo = get_credit_memos_from_magento(authentication_data[:magento_auth], date_range)
 
     if !magento_credit_memo.nil? && magento_credit_memo.count > 0
-      QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_credit_memo, authentication_data[:qbo_auth], access_token)
+      magento_order_without_store_name = []
+      magento_credit_memo.map do |order|
+        store_name = order.last['store_name']
+        store_status = order.last['status'].titleize
+        if include_stores.include?store_name
+          magento_order_without_store_name.push(order)
+          puts "#{store_name} => #{store_status}"
+        end
+      end
+
+      QuickbooksRefundReceipt.new.pushing_refund_receipt_from_magento(run_report, magento_order_without_store_name, authentication_data[:qbo_auth], access_token)
     end
     puts 'End of create refund receipt processing'
   end
