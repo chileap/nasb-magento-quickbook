@@ -33,7 +33,14 @@ module Concerns::QuickbooksCustomers
         customer_id = '12464'
       else
         puts "finding customer id"
-        customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
+        customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first
+        if(customer_id.nil?)
+          create_new_customer(order_items, "Supplier. #{display_name}", list_of_customers_name)
+          display_name = "Supplier. #{display_name}"
+          customer_id = @customer_service.query("Select id From Customer where DisplayName = '#{display_name}'").entries.first.id
+        else
+          customer_id = customer_id.id
+        end
       end
       order_items['customer_id'] = customer_id
       customers.push(order_items)
@@ -68,8 +75,6 @@ module Concerns::QuickbooksCustomers
         @customer_service.create(customer)
       rescue StandardError => e
         puts e
-        customer = customer_detail(order_items, "Supplier. #{display_name}")
-        @customer_service.create(customer)
       end
       array_name.push(display_name.downcase)
     end
