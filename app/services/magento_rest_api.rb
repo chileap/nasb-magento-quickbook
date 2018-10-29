@@ -31,7 +31,7 @@ class MagentoRestApi
     magento_order_ids = lists.map { |list| 
       { 
         shipment_id: list[:increment_id],
-        increment_id: list[:increment_id].gsub(/-.*/, '').gsub(/(?!^\+)\D*/, ''),
+        increment_id: list[:increment_id].gsub(/(?!^\+)\D*/, ''),
         created_at: list[:created_at].in_time_zone('UTC').in_time_zone('America/Toronto').strftime('%Y-%m-%d %H:%M:%S %z')
       }
     }
@@ -40,6 +40,11 @@ class MagentoRestApi
     magento_order_ids.each do |magento_order_id|
       shipment_order = @access_token.get("/api/rest/orders?filter[1][attribute]=increment_id&filter[1][in]=#{magento_order_id[:increment_id]}")
       shipment_order = JSON.parse(shipment_order.body)
+
+      if shipment_order.first.nil?
+        shipment_order = @access_token.get("/api/rest/orders?filter[1][attribute]=increment_id&filter[1][in]=#{magento_order_id[:increment_id].gsub(/-.*/, '')}")
+        shipment_order = JSON.parse(shipment_order.body)
+      end
       puts "#{count = count + 1}: IncrementID = #{magento_order_id[:increment_id]} , ShipmentID = #{magento_order_id[:shipment_id]}"
       shipment_order.first[1]['invoice_date'] = shipment_order.first[1]['created_at']
       shipment_order.first[1]['invoice_grand_total'] = shipment_order.first[1]['base_grand_total']

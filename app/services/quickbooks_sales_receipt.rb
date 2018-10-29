@@ -82,7 +82,7 @@ class QuickbooksSalesReceipt
       result_data = {sales_receipt_id: sales_receipt_id, run_log: run_log}
     end
 
-    write_receipts_into_excel(order["increment_id"], result_data)
+    # write_receipts_into_excel(order["increment_id"], result_data)
     handle_with_orderlogs_and_runlogs(order, result_data)
   end
 
@@ -175,27 +175,27 @@ class QuickbooksSalesReceipt
   end
 
   def write_receipts_into_excel(increment_id, result_data)
-    order_pushed = { increment_id: increment_id, qbo_id: result_data[:sales_receipt_id], result_data: result_data[:run_log] }
-    @orders_data_pushed.merge!({"#{increment_id}" => order_pushed})
-    write_magento_order_to_excel(@orders_data_pushed)
+    # order_pushed = { increment_id: increment_id, qbo_id: result_data[:sales_receipt_id], result_data: result_data[:run_log] }
+    # @orders_data_pushed.merge!({"#{increment_id}" => order_pushed})
+    # write_magento_order_to_excel(@orders_data_pushed)
   end
 
   def write_magento_order_to_excel(orders)
-    book = Spreadsheet::Workbook.new
-    book.create_worksheet
-    index = 0
-    book.worksheet(0).insert_row(index, ['Magento No.', 'Quickbooks Sale Receipt ID', 'Error Message'])
+    # book = Spreadsheet::Workbook.new
+    # book.create_worksheet
+    # index = 0
+    # book.worksheet(0).insert_row(index, ['Magento No.', 'Quickbooks Sale Receipt ID', 'Error Message'])
 
-    orders.each do |key, magento_order|
-      puts key
-      if magento_order[:result_data].status === 'success'
-        book.worksheet(0).insert_row (index + 1), [magento_order[:increment_id], magento_order[:qbo_id],'']
-      else
-        book.worksheet(0).insert_row (index + 1), [magento_order[:increment_id], magento_order[:qbo_id], magento_order[:result_data].message]
-      end
-    end
-    book.write "log/magento_try_run_oct.xls"
-    puts "wrote to log/magento_try_run_oct.xls"
+    # orders.each do |key, magento_order|
+    #   puts key
+    #   if magento_order[:result_data].status === 'success'
+    #     book.worksheet(0).insert_row (index + 1), [magento_order[:increment_id], magento_order[:qbo_id],'']
+    #   else
+    #     book.worksheet(0).insert_row (index + 1), [magento_order[:increment_id], magento_order[:qbo_id], magento_order[:result_data].message]
+    #   end
+    # end
+    # book.write "log/magento_try_run_oct.xls"
+    # puts "wrote to log/magento_try_run_oct.xls"
   end
 
   def transaction_tax_detail(tax_detail)
