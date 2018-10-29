@@ -153,6 +153,7 @@ class QuickbooksSalesReceipt
       check_failed_run_log = RunLog.find_by(magento_id: order['increment_id'])
       if check_failed_run_log.present?
         run_log = check_failed_run_log.update_attributes(order_amount: order['base_grand_total'],credit_amount: sales_receipt_upload.total, order_status: order["status"], billing_name: sales_receipt_upload.customer_ref.name , magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success', message: '', order_date: order["created_at"])
+        run_log = RunLog.find_by(magento_id: order['increment_id'])
       else
         run_log = run_report.run_logs.create!(order_amount: order['base_grand_total'],credit_amount: sales_receipt_upload.total, order_status: order["status"], billing_name: sales_receipt_upload.customer_ref.name , magento_id: order["increment_id"], order_id: order["entity_id"], doc_number: sales_receipt_upload.doc_number, qbo_id: sales_receipt_upload.id, status: 'success', order_date: order["created_at"])
       end
