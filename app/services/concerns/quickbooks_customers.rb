@@ -68,6 +68,8 @@ module Concerns::QuickbooksCustomers
         @customer_service.create(customer)
       rescue StandardError => e
         puts e
+        customer = customer_detail(order_items, "Supplier. #{display_name}")
+        @customer_service.create(customer)
       end
       array_name.push(display_name.downcase)
     end
