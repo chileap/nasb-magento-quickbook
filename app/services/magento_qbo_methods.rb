@@ -72,13 +72,15 @@ class MagentoQboMethods
 
     if !magento_order_without_store_name.nil? && magento_order_without_store_name.count > 0
       failed_and_active_orders = []
+      count = 0
       magento_order_without_store_name.map do |order|
         record_log = RunLog.where(magento_id: order.last["increment_id"]).where(status: 'success')
         if record_log.count == 0
           failed_and_active_orders = failed_and_active_orders.push(order)
         end
+        puts count = count + 1
       end
-      failed_and_active_orders
+      puts "Total Failed & Active records => #{failed_and_active_orders.count}"
       QuickbooksSalesReceipt.new.pushing_sales_receipt_from_magento(run_report, failed_and_active_orders, authentication_data[:qbo_auth], access_token)
     end
     puts 'End of sale receipt processing'
