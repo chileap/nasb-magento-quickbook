@@ -65,9 +65,9 @@ class RunController < ApplicationController
             end
 
             if Rails.env.production?
-              magento_link = "https://truenorthseedbank.com/index.php/admin/96admin89x55/sales_order/view/order_id/#{log.order_id}/"
+              magento_link = "https://truenorthseedbank.com/index.php/admin/adm45inz3x/sales_order/view/order_id/#{log.order_id}/"
             else
-              magento_link = "http://magento-170606-493300.cloudwaysapps.com/96admin89x55/sales_order/view/order_id/#{log.order_id}/"
+              magento_link = "http://magento-170606-493300.cloudwaysapps.com/adm45inz3x/sales_order/view/order_id/#{log.order_id}/"
             end
 
             sheet.add_hyperlink location: magento_link, ref: "A#{index}"
