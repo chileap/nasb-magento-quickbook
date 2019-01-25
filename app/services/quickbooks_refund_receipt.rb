@@ -145,7 +145,7 @@ class QuickbooksRefundReceipt
       end
     end
 
-    product_line_item = QuickbooksRefundReceipt.new.line_item_details(service_with_token, total_refunded.round(2), product_name["product_name"], tax_info)
+    product_line_item = QuickbooksRefundReceipt.new.line_item_details(service_with_token, total_refunded.abs.round(2), product_name["product_name"], tax_info)
     total_amount = total_amount + order["base_subtotal"].to_f
     refund_receipt.line_items << product_line_item
 
