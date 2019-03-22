@@ -44,7 +44,7 @@ class MagentoQboMethods
   def push_qbo_receipts_from_magento_orders(date_range, authentication_data, environment, run_report)
     access_token = RecordToken.where(type_token: environment).first
     include_stores = Store.where(checked: false).pluck(:name)
-    include_status = State.where(checked: true).pluck(:name)
+    include_status = State.where(checked: true).pluck(:value)
 
     puts 'Start running pusing sale receipt'
     magento_orders = get_orders_from_magento(authentication_data[:magento_auth], date_range)
@@ -54,7 +54,7 @@ class MagentoQboMethods
     if !magento_orders.nil?
       magento_orders.map do |order|
         store_name = order.last['store_name']
-        store_status = order.last['status'].titleize
+        store_status = order.last['status']
         if include_stores.include?store_name and include_status.include?store_status
           magento_order_without_store_name.push(order)
           puts "#{store_name} => #{store_status}"
